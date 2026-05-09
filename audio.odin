@@ -9,13 +9,18 @@ import wav "waveforms"
 Audio_Data :: struct {
     logger: Logger,
     note: Note,
-    keyPressed: bool,
-    waveform: wav.Waveform,
-    warp: f32
+    waveData: Wav_Data
 }
 
 Logger :: struct {
     bufferSize: u32,
+    isPlaying: bool,
+}
+
+Wav_Data :: struct {
+    waveform: wav.Waveform,
+    warp_waveform: wav.Waveform,
+    warp_amt: f32,
 }
 
 Note :: struct {
@@ -46,8 +51,8 @@ audio_callback :: proc "c" (pDevice: ^ma.device, pOutput, pInput: rawptr, frameC
 
     for i in 0..<frameCount {
         value : f32
-        if (audio_data.keyPressed) {
-            value = wav.get_wave_value(note.phase, audio_data.waveform)
+        if (audio_data.logger.isPlaying) {
+            value = wav.get_wave_value(note.phase, audio_data.waveData.waveform, audio_data.waveData.warp_waveform, audio_data.waveData.warp_amt)
         }
         
         output[i * 2]     = value * gain 
