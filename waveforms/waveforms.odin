@@ -242,24 +242,24 @@ saw :: proc(phase: f32) -> f32 {
     return 1 - phase * 2
 }
 
-saw_to_square :: proc(phase: f32, warp: f32) -> f32 {
-    return math.lerp(saw(phase), square(phase), warp)
-}
-
 // saw_to_square :: proc(phase: f32, warp: f32) -> f32 {
-//     _warp := math.pow(warp, .05)
-
-//     if _warp == 1 { return square(phase) }
-//     _phase := phase
-//     if phase <= .5 {
-//         _phase = .5 * sine_to_square_phase_mod(2 * remap(phase, 0, 1, .25, .75), _warp)
-//     }
-//     else {
-//         _phase = .5 + .5 * sine_to_square_phase_mod(2 * remap(phase, 0, 1, .25, .75) - 1, _warp)
-//     }
-    
-//     return math.lerp(saw(phase), sine(_phase), warp)
+//     return math.lerp(saw(phase), square(phase), warp)
 // }
+
+saw_to_square :: proc(phase: f32, warp: f32) -> f32 {
+    _warp := math.pow(warp, .05)
+
+    if _warp == 1 { return square(phase) }
+    _phase := phase
+    if phase <= .5 {
+        _phase = .5 * sine_to_square_phase_mod(2 * remap(phase, 0, 1, .25, .75), _warp)
+    }
+    else {
+        _phase = .5 + .5 * sine_to_square_phase_mod(2 * remap(phase, 0, 1, .25, .75) - 1, _warp)
+    }
+    
+    return math.lerp(saw(phase), sine(_phase), warp)
+}
 
 explicit_harmonics :: proc(harmonics: []f32, volume_limiter: f32, phase: f32) -> f32 {
     val: f32
