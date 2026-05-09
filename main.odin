@@ -42,8 +42,8 @@ main :: proc() {
     glfw.SetWindowSizeLimits(window, 320, 180, glfw.DONT_CARE, glfw.DONT_CARE)
 
     audio_data : Audio_Data
-    audio_data.note.frequency = 180
-    audio_data.note2.frequency = 180 * f32(4.0 / 3.0)
+    audio_data.note.frequency = 220
+    audio_data.note2.frequency = 220 * f32(5.0 / 4.0)
 
     device_config := ma.device_config_init(ma.device_type.playback)
     device_config.playback.format   = .f32
@@ -79,6 +79,7 @@ main :: proc() {
     altKeyPressed: bool
     warp_up: bool
     warp_move:=false
+    warp_speed:=f32(.001)
     // Main Loop
     for !glfw.WindowShouldClose(window) {
         // Input
@@ -108,8 +109,8 @@ main :: proc() {
         altKeyPressed = glfw.GetKey(window, glfw.KEY_LEFT_ALT) == glfw.PRESS
 
         if warp_move {
-            if warp_up { audio_data.waveData.warp_amt += .0001 }
-            else { audio_data.waveData.warp_amt -= .0001 }
+            if warp_up { audio_data.waveData.warp_amt += warp_speed }
+            else { audio_data.waveData.warp_amt -= warp_speed }
 
             if audio_data.waveData.warp_amt <= 0 && !warp_up {
                 audio_data.waveData.warp_amt = 0
