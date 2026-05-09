@@ -5,18 +5,24 @@ import "core:math"
 @private TRIANGLE_SCALE :: .9
 @private SQUARE_SCALE   :: 0.4
 @private SAW_SCALE      :: 0.5
+@private X_SCALE        :: 0.8
 
 Waveform :: enum {
     Sine,
-    Triangle,   // odd harmonics
-    Square,
-    Saw,
-    White
+    Triangle,   // odd harmonics, volume taper
+    Square,     // odd harmonics
+    Saw,        // all harmonics
+    X,
+    Test
 }
+
+// harmonics : []f32 = {1, 2, 3, 5, 7, 11, 13, 17, 19, 23, 27}
+harmonics : []f32 = {1, 2, 4, 8, 16, 32}
+volume_limiter : f32 = 3
 
 get_wave_value :: proc(phase: f32, waveform: Waveform, waveform2: Waveform, warp_amt: f32 = 0, get_raw: bool = false) -> f32 {
     value: f32
-    switch waveform {
+    #partial switch waveform {
         case .Sine:
             #partial switch waveform2 {
                 case .Square:
@@ -46,10 +52,10 @@ get_wave_value :: proc(phase: f32, waveform: Waveform, waveform2: Waveform, warp
             // value = square(phase) * (1 if get_raw else SQUARE_SCALE)
         case .Saw:
             value = saw(phase) * (1 if get_raw else SAW_SCALE)
-        case .White:
-            value = saw(phase)
+        case .X:
+            value = explicit_harmonics(harmonics[:], volume_limiter, phase)
         case:
-            value = test(phase)
+            value = test(phase) * (1 if get_raw else SAW_SCALE)
     }
 
     return value
@@ -98,6 +104,17 @@ triangle_to_saw :: proc(phase: f32, warp: f32) -> f32 {
         // Downward ramp
         return 1.0 - ((phase - warp) / (1.0 - warp)) * 2.0
     }
+}
+
+explicit_harmonics :: proc(harmonics: []f32, volume_limiter: f32, phase: f32) -> f32 {
+    val: f32
+    for n in harmonics {
+        val += (1.0 / f32(n)) * math.sin(2.0 * math.PI * phase * f32(n))
+    }
+
+    val /= volume_limiter
+
+    return val
 }
 
 test :: proc(phase: f32) -> f32 {

@@ -90,12 +90,12 @@ main :: proc() {
         if glfw.GetKey(window, glfw.KEY_Z) == glfw.PRESS && !zKeyPressed {
             audio_data.waveData.warp_amt = 0
             warp_up = false
-            audio_data.waveData.waveform = wav.Waveform((int(audio_data.waveData.waveform) + 1) % 4)
+            audio_data.waveData.waveform = wav.Waveform((int(audio_data.waveData.waveform) + 1) % len(wav.Waveform))
         }
         zKeyPressed = glfw.GetKey(window, glfw.KEY_Z) == glfw.PRESS
 
         if glfw.GetKey(window, glfw.KEY_X) == glfw.PRESS && !xKeyPressed {
-            audio_data.waveData.warp_waveform = wav.Waveform((int(audio_data.waveData.warp_waveform) + 1) % 4)
+            audio_data.waveData.warp_waveform = wav.Waveform((int(audio_data.waveData.warp_waveform) + 1) % len(wav.Waveform))
             audio_data.waveData.warp_amt = 0
             warp_up = false
         }
