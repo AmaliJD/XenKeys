@@ -42,7 +42,7 @@ main :: proc() {
     glfw.SetWindowSizeLimits(window, 320, 180, glfw.DONT_CARE, glfw.DONT_CARE)
 
     audio_data : Audio_Data
-    audio_data.note.frequency = 220
+    audio_data.note.frequency = 110
 
     device_config := ma.device_config_init(ma.device_type.playback)
     device_config.playback.format   = .f32
@@ -75,9 +75,9 @@ main :: proc() {
     spaceKeyPressed: bool
     zKeyPressed: bool
     xKeyPressed: bool
-    tabKeyPressed: bool
+    altKeyPressed: bool
     warp_up: bool
-    warp_move:=true
+    warp_move:=false
     // Main Loop
     for !glfw.WindowShouldClose(window) {
         // Input
@@ -95,16 +95,16 @@ main :: proc() {
         zKeyPressed = glfw.GetKey(window, glfw.KEY_Z) == glfw.PRESS
 
         if glfw.GetKey(window, glfw.KEY_X) == glfw.PRESS && !xKeyPressed {
-            audio_data.waveData.warp_waveform = wav.Waveform((int(audio_data.waveData.warp_waveform) + 1) % len(wav.Waveform))
+            audio_data.waveData.warp_waveform = wav.Waveform((int(audio_data.waveData.warp_waveform) + 1) % 4)
             audio_data.waveData.warp_amt = 0
             warp_up = false
         }
         xKeyPressed = glfw.GetKey(window, glfw.KEY_X) == glfw.PRESS
 
-        if glfw.GetKey(window, glfw.KEY_TAB) == glfw.PRESS && !tabKeyPressed {
+        if glfw.GetKey(window, glfw.KEY_LEFT_ALT) == glfw.PRESS && !altKeyPressed {
             warp_move = !warp_move
         }
-        tabKeyPressed = glfw.GetKey(window, glfw.KEY_TAB) == glfw.PRESS
+        altKeyPressed = glfw.GetKey(window, glfw.KEY_LEFT_ALT) == glfw.PRESS
 
         if warp_move {
             if warp_up { audio_data.waveData.warp_amt += .0001 }
