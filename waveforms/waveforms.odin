@@ -27,132 +27,137 @@ get_wave_value :: proc(phase: f32, waveform: Waveform, waveform2: Waveform, warp
     value: f32
     waveform_pair := int(waveform) * 10 + int(waveform2)
 
+    phase_quantize : f32 = 32
+    _phase := f32(math.round(phase * phase_quantize)) / phase_quantize
+
     switch waveform_pair {
         case 00:
-            // value = sine(phase)
-            value = sine_to_sine(phase, warp) * (1 if get_raw else math.lerp(f32(1), NIPPLE_SCALE, warp))
+            // value = sine(_phase)
+            value = sine_to_sine(_phase, warp) * (1 if get_raw else math.lerp(f32(1), NIPPLE_SCALE, warp))
         case 11:
-            value = triangle(phase) * (1 if get_raw else TRIANGLE_SCALE)
+            value = triangle(_phase) * (1 if get_raw else TRIANGLE_SCALE)
         case 22:
-            value = square_to_square(phase, warp) * (1 if get_raw else SQUARE_SCALE)
+            value = square_to_square(_phase, warp) * (1 if get_raw else SQUARE_SCALE)
         case 33:
-            value = saw(phase) * (1 if get_raw else SAW_SCALE)
+            value = saw(_phase) * (1 if get_raw else SAW_SCALE)
         case 01:
-            value = sine_to_triangle(phase, warp) * (1 if get_raw else math.lerp(f32(1), TRIANGLE_SCALE, warp))
+            value = sine_to_triangle(_phase, warp) * (1 if get_raw else math.lerp(f32(1), TRIANGLE_SCALE, warp))
         case 10:
-            value = sine_to_triangle(phase, 1 - warp) * (1 if get_raw else math.lerp(f32(1), TRIANGLE_SCALE, 1 - warp))
+            value = sine_to_triangle(_phase, 1 - warp) * (1 if get_raw else math.lerp(f32(1), TRIANGLE_SCALE, 1 - warp))
         case 02:
-            value = sine_to_square(phase, warp) * (1 if get_raw else math.lerp(f32(1), SQUARE_SCALE, warp))
+            value = sine_to_square(_phase, warp) * (1 if get_raw else math.lerp(f32(1), SQUARE_SCALE, warp))
         case 20:
-            value = sine_to_square(phase, 1 - warp) * (1 if get_raw else math.lerp(f32(1), SQUARE_SCALE, 1 - warp))
+            value = sine_to_square(_phase, 1 - warp) * (1 if get_raw else math.lerp(f32(1), SQUARE_SCALE, 1 - warp))
         case 03:
-            value = sine_to_saw(phase, warp) * (1 if get_raw else math.lerp(f32(1), SAW_SCALE, warp))
+            value = sine_to_saw(_phase, warp) * (1 if get_raw else math.lerp(f32(1), SAW_SCALE, warp))
         case 30:
-            value = sine_to_saw(phase, 1 - warp) * (1 if get_raw else math.lerp(f32(1), SAW_SCALE, 1 - warp))
+            value = sine_to_saw(_phase, 1 - warp) * (1 if get_raw else math.lerp(f32(1), SAW_SCALE, 1 - warp))
         case 12:
-            value = triangle_to_square(phase, warp) * (1 if get_raw else math.lerp(TRIANGLE_SCALE, SQUARE_SCALE, warp))
+            value = triangle_to_square(_phase, warp) * (1 if get_raw else math.lerp(TRIANGLE_SCALE, SQUARE_SCALE, warp))
         case 21:
-            value = triangle_to_square(phase, 1 - warp) * (1 if get_raw else math.lerp(TRIANGLE_SCALE, SQUARE_SCALE, 1 - warp))
+            value = triangle_to_square(_phase, 1 - warp) * (1 if get_raw else math.lerp(TRIANGLE_SCALE, SQUARE_SCALE, 1 - warp))
         case 13:
-            value = triangle_to_saw(phase, warp) * (1 if get_raw else math.lerp(TRIANGLE_SCALE, SAW_SCALE, warp))
+            value = triangle_to_saw(_phase, warp) * (1 if get_raw else math.lerp(TRIANGLE_SCALE, SAW_SCALE, warp))
         case 31:
-            value = triangle_to_saw(phase, 1 - warp) * (1 if get_raw else math.lerp(TRIANGLE_SCALE, SAW_SCALE, 1 - warp))
+            value = triangle_to_saw(_phase, 1 - warp) * (1 if get_raw else math.lerp(TRIANGLE_SCALE, SAW_SCALE, 1 - warp))
         case 32:
-            value = saw_to_square(phase, warp) * (1 if get_raw else math.lerp(SAW_SCALE, SQUARE_SCALE, warp))
+            value = saw_to_square(_phase, warp) * (1 if get_raw else math.lerp(SAW_SCALE, SQUARE_SCALE, warp))
         case 23:
-            value = saw_to_square(phase, 1 - warp) * (1 if get_raw else math.lerp(SAW_SCALE, SQUARE_SCALE, 1 - warp))
+            value = saw_to_square(_phase, 1 - warp) * (1 if get_raw else math.lerp(SAW_SCALE, SQUARE_SCALE, 1 - warp))
         case 40, 41, 42, 43, 44, 45:
-            value = explicit_harmonics(harmonics[:], volume_limiter, phase)
+            value = explicit_harmonics(harmonics[:], volume_limiter, _phase)
         case:
-            value = test(phase)
-
+            value = test(_phase)
     }
 
-    return value
+    value_quantize : f32 = 32
+    _value := f32(math.round(value * value_quantize)) / value_quantize
+
+    return _value
 }
 
 get_wave_values :: proc(buffer: []f32, start_phase, end_phase: f32, waveform: Waveform, waveform2: Waveform, warp: f32) {
     count := len(buffer)
     step := (end_phase - start_phase) / f32(count - 1)
 
-    phase := start_phase
+    _phase := start_phase
     for i in 0..<count {
-        buffer[i] = get_wave_value(phase, waveform, waveform2, warp, true)
-        phase += step
+        buffer[i] = get_wave_value(_phase, waveform, waveform2, warp, true)
+        _phase += step
     }
 }
 
-sine :: proc(phase: f32) -> f32 {
-    return math.sin_f32(phase * 2.0 * math.PI)
+sine :: proc(_phase: f32) -> f32 {
+    return math.sin_f32(_phase * 2.0 * math.PI)
 }
 
-sine_to_sine :: proc(phase: f32, warp: f32) -> f32 {
+sine_to_sine :: proc(_phase: f32, warp: f32) -> f32 {
 
     _warp := warp//math.pow(warp, .5)
 
-    if _warp == 0 { return sine(phase) }
-    _phase := phase
-    if phase <= .5 {
-        _phase = .5 * sine_to_sine_phase_mod(2 * phase, _warp)
+    if _warp == 0 { return sine(_phase) }
+    _phase := _phase
+    if _phase <= .5 {
+        _phase = .5 * sine_to_sine_phase_mod(2 * _phase, _warp)
     }
     else {
-        _phase = .5 + .5 * sine_to_sine_phase_mod(2 * phase - 1, _warp)
+        _phase = .5 + .5 * sine_to_sine_phase_mod(2 * _phase - 1, _warp)
     }
     
     return sine(_phase)
 }
 
-sine_to_sine_phase_mod :: proc(phase, warp: f32) -> f32 {
+sine_to_sine_phase_mod :: proc(_phase, warp: f32) -> f32 {
     k := 1 + 8 * warp
-    t := 2 * phase - 1
+    t := 2 * _phase - 1
     sigmoid := math.tanh(k * t)
     s := .5 * (sigmoid + 1)
-    return (1 - warp) * phase + warp * s
+    return (1 - warp) * _phase + warp * s
 }
 
-// sine_to_square :: proc(phase: f32, warp: f32) -> f32 {
+// sine_to_square :: proc(_phase: f32, warp: f32) -> f32 {
 
 //     value : f32
 //     if (warp < 1) {
-//         value = math.clamp(sine(phase) / (1 - warp), -1, 1)
+//         value = math.clamp(sine(_phase) / (1 - warp), -1, 1)
 //     }
 //     else {
-//         value = square(phase)
+//         value = square(_phase)
 //     }
 //     return value
 // }
 
-sine_to_square :: proc(phase: f32, warp: f32) -> f32 {
+sine_to_square :: proc(_phase: f32, warp: f32) -> f32 {
 
     _warp := math.pow(warp, .5)
 
-    if _warp == 1 { return square(phase) }
-    _phase := phase
-    if phase <= .5 {
-        _phase = .5 * sine_to_square_phase_mod(2 * phase, _warp)
+    if _warp == 1 { return square(_phase) }
+    _phase := _phase
+    if _phase <= .5 {
+        _phase = .5 * sine_to_square_phase_mod(2 * _phase, _warp)
     }
     else {
-        _phase = .5 + .5 * sine_to_square_phase_mod(2 * phase - 1, _warp)
+        _phase = .5 + .5 * sine_to_square_phase_mod(2 * _phase - 1, _warp)
     }
     
     return sine(_phase)
 }
 
-sine_to_square_phase_mod :: proc(phase, warp: f32) -> f32 {
+sine_to_square_phase_mod :: proc(_phase, warp: f32) -> f32 {
     p := 1 / (1 - warp)
-    t := 2 * phase - 1
+    t := 2 * _phase - 1
     return .5 + .5 * math.sign(t) * math.pow(math.abs(t), p)
 }
 
-sine_to_triangle :: proc(phase: f32, warp: f32) -> f32 {
-    return math.lerp(sine(phase), triangle(phase), warp)
+sine_to_triangle :: proc(_phase: f32, warp: f32) -> f32 {
+    return math.lerp(sine(_phase), triangle(_phase), warp)
 }
 
-sine_to_saw :: proc(phase: f32, warp: f32) -> f32 {
-    s_phase := phase
+sine_to_saw :: proc(_phase: f32, warp: f32) -> f32 {
+    s_phase := _phase
     _warp := math.pow(warp, .5)
 
-    if _warp == 1 { return saw(phase) }
+    if _warp == 1 { return saw(_phase) }
 
     low := f32(math.lerp(f32(0), f32(.25), f32(1) - _warp))
     high := f32(math.lerp(f32(.75), f32(1), _warp))
@@ -163,7 +168,7 @@ sine_to_saw :: proc(phase: f32, warp: f32) -> f32 {
     else if s_phase <= high {
         s_phase = remap(s_phase, low, high, .25, .75)
         // return sine(s_phase)
-        saw_remapped := saw(remap(phase, low, high, 0, 1))
+        saw_remapped := saw(remap(_phase, low, high, 0, 1))
         return math.lerp(sine(s_phase), saw_remapped, _warp)
     }
     else {
@@ -172,100 +177,100 @@ sine_to_saw :: proc(phase: f32, warp: f32) -> f32 {
     }
 }
 
-// sine_to_saw :: proc(phase: f32, warp: f32) -> f32 {
+// sine_to_saw :: proc(_phase: f32, warp: f32) -> f32 {
 //     _warp := warp//math.pow(warp, .5)
 
-//     if _warp == 1 { return saw(phase) }
-//     _phase := sine_to_saw_phase_mod(phase, _warp)
+//     if _warp == 1 { return saw(_phase) }
+//     _phase := sine_to_saw_phase_mod(_phase, _warp)
 //     return sine(_phase)
 // }
 
-sine_to_saw_phase_mod :: proc(phase, warp: f32) -> f32 {
-    slope_1 := phase
-    slope_2 := phase * .5 + .25
+sine_to_saw_phase_mod :: proc(_phase, warp: f32) -> f32 {
+    slope_1 := _phase
+    slope_2 := _phase * .5 + .25
 
     y := f32(.5)
-    if phase < .5 {
-        y = math.lerp(slope_1, slope_2, remap(phase, 0, .5, 0, 1))
+    if _phase < .5 {
+        y = math.lerp(slope_1, slope_2, remap(_phase, 0, .5, 0, 1))
     }
-    else if phase > .5 {
-        y = math.lerp(slope_2, slope_1, remap(phase, .5, 1, 0, 1))
+    else if _phase > .5 {
+        y = math.lerp(slope_2, slope_1, remap(_phase, .5, 1, 0, 1))
     }
     
     return slope_2
 }
 
-triangle :: proc(phase: f32) -> f32 {
-    adj_phase := phase
+triangle :: proc(_phase: f32) -> f32 {
+    adj_phase := _phase
     if adj_phase -= .25; adj_phase < 0 {
         adj_phase += 1
     }
     return math.abs(adj_phase * 4 - 2) - 1
 }
 
-triangle_to_square :: proc(phase: f32, warp: f32) -> f32 {
-    // return math.lerp(triangle(phase), square(phase), warp)
+triangle_to_square :: proc(_phase: f32, warp: f32) -> f32 {
+    // return math.lerp(triangle(_phase), square(_phase), warp)
     if warp == 1 {
-        return square(phase)
+        return square(_phase)
     }
     else {
-        tri := triangle(phase)
+        tri := triangle(_phase)
         scaled_tri := tri / (1 - warp)
         return math.clamp(scaled_tri, -1, 1)
     }
 }
 
-triangle_to_saw :: proc(phase: f32, warp: f32) -> f32 {
+triangle_to_saw :: proc(_phase: f32, warp: f32) -> f32 {
     _warp := remap(warp, 0, 1, .5, 0)
-    if phase < _warp {
+    if _phase < _warp {
         // Upward ramp
-        if _warp == 0 {return saw(phase)}
+        if _warp == 0 {return saw(_phase)}
         else {
-        return (phase / _warp) * 2.0 - 1.0
+        return (_phase / _warp) * 2.0 - 1.0
         }
     } else {
         // Downward ramp
-        return 1.0 - ((phase - _warp) / (1.0 - _warp)) * 2.0
+        return 1.0 - ((_phase - _warp) / (1.0 - _warp)) * 2.0
     }
 }
 
-square :: proc(phase: f32) -> f32 {
-    return 1 if phase < .5 else -1
+square :: proc(_phase: f32) -> f32 {
+    return 1 if _phase < .5 else -1
 }
 
-square_to_square :: proc(phase: f32, warp: f32) -> f32 {
+square_to_square :: proc(_phase: f32, warp: f32) -> f32 {
     _warp := remap(warp, 0, 1, .5, 1)
-    return 1 if phase < math.clamp(_warp, .005, .995) else -1
+    return 1 if _phase < math.clamp(_warp, .005, .995) else -1
 }
 
-saw :: proc(phase: f32) -> f32 {
-    return 1 - phase * 2
+saw :: proc(_phase: f32) -> f32 {
+    return 1 - _phase * 2
 }
 
-// saw_to_square :: proc(phase: f32, warp: f32) -> f32 {
-//     return math.lerp(saw(phase), square(phase), warp)
+saw_to_square :: proc(_phase: f32, warp: f32) -> f32 {
+    return math.lerp(saw(_phase), square(_phase), warp)
+}
+
+// saw_to_square :: proc(_phase: f32, warp: f32) -> f32 {
+//     _warp := math.pow(warp, .05)
+
+//     if _warp == 1 { return square(_phase) }
+//     _phase := _phase
+//     if _phase <= .5 {
+//         _phase = .5 * sine_to_square_phase_mod(2 * remap(_phase, 0, 1, .25, .75), _warp)
+//     }
+//     else {
+//         _phase = .5 + .5 * sine_to_square_phase_mod(2 * remap(_phase, 0, 1, .25, .75) - 1, _warp)
+//     }
+    
+//     return math.lerp(saw(_phase), sine(_phase), warp)
 // }
 
-saw_to_square :: proc(phase: f32, warp: f32) -> f32 {
-    _warp := math.pow(warp, .05)
-
-    if _warp == 1 { return square(phase) }
-    _phase := phase
-    if phase <= .5 {
-        _phase = .5 * sine_to_square_phase_mod(2 * remap(phase, 0, 1, .25, .75), _warp)
-    }
-    else {
-        _phase = .5 + .5 * sine_to_square_phase_mod(2 * remap(phase, 0, 1, .25, .75) - 1, _warp)
-    }
-    
-    return math.lerp(saw(phase), sine(_phase), warp)
-}
-
-explicit_harmonics :: proc(harmonics: []f32, volume_limiter: f32, phase: f32) -> f32 {
+explicit_harmonics :: proc(harmonics: []f32, volume_limiter: f32, _phase: f32) -> f32 {
     val: f32
     i := f32(1)
     for n in harmonics {
-        val += i * (1.0 / f32(n)) * math.sin(2.0 * math.PI * phase * f32(n))
+        val += i * (1.0 / f32(n)) * math.sin(2.0 * math.PI * _phase * f32(n))
     }
 
     val /= volume_limiter
@@ -273,7 +278,7 @@ explicit_harmonics :: proc(harmonics: []f32, volume_limiter: f32, phase: f32) ->
     return val
 }
 
-test :: proc(phase: f32) -> f32 {
+test :: proc(_phase: f32) -> f32 {
     return 0
 }
 
