@@ -42,7 +42,8 @@ main :: proc() {
     glfw.SetWindowSizeLimits(window, 320, 180, glfw.DONT_CARE, glfw.DONT_CARE)
 
     audio_data : Audio_Data
-    audio_data.note.frequency = 110
+    audio_data.note.frequency = 180
+    audio_data.note2.frequency = 180 * f32(4.0 / 3.0)
 
     device_config := ma.device_config_init(ma.device_type.playback)
     device_config.playback.format   = .f32

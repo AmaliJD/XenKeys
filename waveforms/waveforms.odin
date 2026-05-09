@@ -9,14 +9,17 @@ import "core:math"
 
 Waveform :: enum {
     Sine,
-    Triangle,   // odd harmonics, volume taper
-    Square,     // odd harmonics
-    Saw,        // all harmonics
+    Triangle,   // odd harmonics, 1/n², alternating signs
+    Square,     // odd harmonics, 1/n
+    Saw,        // all harmonics, 1/n
     X,
     Test
 }
 
-harmonics : []f32 = {1, 2, 3, 5, 7, 11, 13, 17, 19, 23, 27}
+// harmonics : []f32 = {1, 2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 51, 53, 59, 61} // prime
+// harmonics : []f32 = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32} // saw
+// harmonics : []f32 = {1, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32, 34, 36, 38, 40, 42, 44, 46, 48, 50} // quarter circle
+harmonics : []f32 = {1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144} // fibbonaci bells
 volume_limiter : f32 = 3
 
 get_wave_value :: proc(phase: f32, waveform: Waveform, waveform2: Waveform, warp_amt: f32 = 0, get_raw: bool = false) -> f32 {
@@ -68,7 +71,7 @@ get_wave_value :: proc(phase: f32, waveform: Waveform, waveform2: Waveform, warp
 
 get_wave_values :: proc(buffer: []f32, start_phase, end_phase: f32, waveform: Waveform, waveform2: Waveform, warp_amt: f32) {
     count := len(buffer)
-    step := (end_phase - start_phase) / f32(count)
+    step := (end_phase - start_phase) / f32(count - 1)
 
     phase := start_phase
     for i in 0..<count {
@@ -143,7 +146,10 @@ triangle_to_saw :: proc(phase: f32, warp: f32) -> f32 {
     _warp := remap(warp, 0, 1, .5, 0)
     if phase < _warp {
         // Upward ramp
+        if _warp == 0 {return saw(phase)}
+        else {
         return (phase / _warp) * 2.0 - 1.0
+        }
     } else {
         // Downward ramp
         return 1.0 - ((phase - _warp) / (1.0 - _warp)) * 2.0
@@ -151,12 +157,12 @@ triangle_to_saw :: proc(phase: f32, warp: f32) -> f32 {
 }
 
 square :: proc(phase: f32) -> f32 {
-    return 1 if phase <= .5 else -1
+    return 1 if phase < .5 else -1
 }
 
 square_to_square :: proc(phase: f32, warp: f32) -> f32 {
     _warp := remap(warp, 0, 1, .5, 1)
-    return 1 if phase <= math.clamp(_warp, .005, .995) else -1
+    return 1 if phase < math.clamp(_warp, .005, .995) else -1
 }
 
 saw :: proc(phase: f32) -> f32 {
