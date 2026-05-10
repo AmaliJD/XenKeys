@@ -2,6 +2,7 @@ package waveforms
 
 import "core:math"
 
+// ----------------------------------------------------------------------------------- consts & structs
 @private TRIANGLE_SCALE :: f32(.9)
 @private SQUARE_SCALE   :: f32(0.35)
 @private SAW_SCALE      :: f32(0.4)
@@ -23,6 +24,10 @@ harmonics : []f32 = {1, 3, 5, 7, 9, 11, 13, 15, 17, 19, 21, 23, 25, 27, 29, 31, 
 // harmonics : []f32 = {1, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32, 34, 36, 38, 40, 42, 44, 46, 48, 50} // quarter circle
 // harmonics : []f32 = {1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144} // fibbonaci bells
 volume_limiter : f32 = 3
+
+
+
+// ----------------------------------------------------------------------------------- read waves
 
 get_wave_value :: proc(phase: f32, waveform: Waveform, waveform2: Waveform, warp: f32 = 0, get_raw: bool = false) -> f32 {
     value: f32
@@ -88,6 +93,7 @@ get_wave_values :: proc(buffer: []f32, start_phase, end_phase: f32, waveform: Wa
     }
 }
 
+// ----------------------------------------------------------------------------------- sine
 sine :: proc(phase: f32) -> f32 {
     return math.sin_f32(phase * 2.0 * math.PI)
 }
@@ -201,6 +207,8 @@ sine_to_saw_phase_mod :: proc(phase, warp: f32) -> f32 {
     return slope_2
 }
 
+
+// ----------------------------------------------------------------------------------- triangle
 triangle :: proc(phase: f32) -> f32 {
     _phase := phase
     if _phase -= .25; _phase < 0 {
@@ -235,6 +243,8 @@ triangle_to_saw :: proc(phase: f32, warp: f32) -> f32 {
     }
 }
 
+
+// ----------------------------------------------------------------------------------- square
 square :: proc(phase: f32) -> f32 {
     return 1 if phase < .5 else -1
 }
@@ -244,6 +254,8 @@ square_to_square :: proc(phase: f32, warp: f32) -> f32 {
     return 1 if phase < math.clamp(_warp, .005, .995) else -1
 }
 
+
+// ----------------------------------------------------------------------------------- saw
 saw :: proc(phase: f32) -> f32 {
     return 1 - phase * 2
 }
@@ -267,6 +279,8 @@ saw_to_square :: proc(phase: f32, warp: f32) -> f32 {
 //     return math.lerp(saw(phase), sine(_phase), warp)
 // }
 
+
+// ----------------------------------------------------------------------------------- other
 explicit_harmonics :: proc(harmonics: []f32, volume_limiter: f32, phase: f32) -> f32 {
     val: f32
     i := f32(1)

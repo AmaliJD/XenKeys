@@ -1,7 +1,6 @@
 package main
 
 import "core:fmt"
-import "core:reflect"
 
 import "imgui"
 import imgui_glfw "imgui/imgui_impl_glfw"
@@ -13,12 +12,10 @@ import ma "vendor:miniaudio"
 
 import wav "waveforms"
 
-window_width  : i32 = 1280
-window_height : i32 = 720
-
 main :: proc() {
-    // Init GLFW
-    if !glfw.Init() {
+    // ----------------------------------------------------------------------------------- init glfw
+    if !glfw.Init()
+    {
         fmt.printfln("Failed to initialize GLFW")
         return
     }
@@ -28,23 +25,30 @@ main :: proc() {
     glfw.WindowHint(glfw.CONTEXT_VERSION_MINOR, 3)
     glfw.WindowHint(glfw.OPENGL_PROFILE, glfw.OPENGL_CORE_PROFILE)
 
-    // Create Window
+
+    // ----------------------------------------------------------------------------------- create window
+    window_width  : i32 = 1280
+    window_height : i32 = 720
     window := glfw.CreateWindow(window_width, window_height, "XenKeys", nil, nil)
-    if (window == nil) {
+    if (window == nil)
+    {
         fmt.printfln("Failed to create window")
         return
     }
     glfw.MakeContextCurrent(window)
 
-    // Connect window (GLFW) to graphics card (OpenGL)
-    gl.load_up_to(3, 3, glfw.gl_set_proc_address)
 
+    // ----------------------------------------------------------------------------------- connect window (GLFW) to graphics card (OpenGL)
+    gl.load_up_to(3, 3, glfw.gl_set_proc_address)
     glfw.SetWindowSizeLimits(window, 320, 180, glfw.DONT_CARE, glfw.DONT_CARE)
 
+
+    // ----------------------------------------------------------------------------------- Audio_Data
     audio_data : Audio_Data
     audio_data.note.frequency = 220
-    audio_data.note2.frequency = 220 * f32(5.0 / 4.0)
 
+
+    // ----------------------------------------------------------------------------------- device config
     device_config := ma.device_config_init(ma.device_type.playback)
     device_config.playback.format   = .f32
     device_config.playback.channels = 2
@@ -61,10 +65,13 @@ main :: proc() {
     ma.device_start(&device)
     defer ma.device_uninit(&device)
 
+
+    // ----------------------------------------------------------------------------------- imgui setup
     imgui.CreateContext()
     imgui_glfw.InitForOpenGL(window, true)
     imgui_gl.Init("#version 330")
-    defer {
+    defer
+    {
         imgui_gl.Shutdown()
         imgui_glfw.Shutdown()
         imgui.DestroyContext()
@@ -72,6 +79,8 @@ main :: proc() {
 
     window_flags := get_window_flags()
 
+
+    // ----------------------------------------------------------------------------------- render loop
     waveform_visual : [256]f32
     spaceKeyPressed: bool
     zKeyPressed: bool
@@ -80,54 +89,64 @@ main :: proc() {
     warp_up: bool
     warp_move:=false
     warp_speed:=f32(.001)
-    // Main Loop
-    for !glfw.WindowShouldClose(window) {
-        // Input
+
+    for !glfw.WindowShouldClose(window)
+    {
+        // ----------------------------------------------------------------------------------- input
         glfw.PollEvents()
-        if glfw.GetKey(window, glfw.KEY_SPACE) == glfw.PRESS && !spaceKeyPressed {
+        if glfw.GetKey(window, glfw.KEY_SPACE) == glfw.PRESS && !spaceKeyPressed
+        {
             audio_data.logger.isPlaying = !audio_data.logger.isPlaying
         }
         spaceKeyPressed = glfw.GetKey(window, glfw.KEY_SPACE) == glfw.PRESS
         
-        if glfw.GetKey(window, glfw.KEY_Z) == glfw.PRESS && !zKeyPressed {
+        if glfw.GetKey(window, glfw.KEY_Z) == glfw.PRESS && !zKeyPressed
+        {
             audio_data.waveData.warp_amt = 0
             warp_up = false
             audio_data.waveData.waveform = wav.Waveform((int(audio_data.waveData.waveform) + 1) % len(wav.Waveform))
         }
         zKeyPressed = glfw.GetKey(window, glfw.KEY_Z) == glfw.PRESS
 
-        if glfw.GetKey(window, glfw.KEY_X) == glfw.PRESS && !xKeyPressed {
+        if glfw.GetKey(window, glfw.KEY_X) == glfw.PRESS && !xKeyPressed
+        {
             audio_data.waveData.warp_waveform = wav.Waveform((int(audio_data.waveData.warp_waveform) + 1) % 4)
             audio_data.waveData.warp_amt = 0
             warp_up = false
         }
         xKeyPressed = glfw.GetKey(window, glfw.KEY_X) == glfw.PRESS
 
-        if glfw.GetKey(window, glfw.KEY_LEFT_ALT) == glfw.PRESS && !altKeyPressed {
+        if glfw.GetKey(window, glfw.KEY_LEFT_ALT) == glfw.PRESS && !altKeyPressed
+        {
             warp_move = !warp_move
         }
         altKeyPressed = glfw.GetKey(window, glfw.KEY_LEFT_ALT) == glfw.PRESS
 
-        if warp_move {
+        if warp_move
+        {
             if warp_up { audio_data.waveData.warp_amt += warp_speed }
             else { audio_data.waveData.warp_amt -= warp_speed }
 
-            if audio_data.waveData.warp_amt <= 0 && !warp_up {
+            if audio_data.waveData.warp_amt <= 0 && !warp_up
+            {
                 audio_data.waveData.warp_amt = 0
                 warp_up = true
             }
-            else if audio_data.waveData.warp_amt >= 1 && warp_up {
+            else if audio_data.waveData.warp_amt >= 1 && warp_up
+            {
                 audio_data.waveData.warp_amt = 1
                 warp_up = false
             }
         }
 
-        // Start Frame
+
+        // ----------------------------------------------------------------------------------- start frame
         imgui_gl.NewFrame()
         imgui_glfw.NewFrame()
         imgui.NewFrame()
 
-        // UI
+
+        // ----------------------------------------------------------------------------------- ui
         imgui.Begin("Log", nil, window_flags.invisible)
         imgui.Text("Buffer Size: %d", audio_data.logger.bufferSize)
         imgui.Text("Playing Sound (Spacebar): %d", audio_data.logger.isPlaying)
@@ -148,7 +167,8 @@ main :: proc() {
         )
         imgui.End()
 
-        // Rendering
+
+        // ----------------------------------------------------------------------------------- rendering
         gl.ClearColor(0.15, 0.15, 0.15, 1.0)
         gl.Clear(gl.COLOR_BUFFER_BIT)
 

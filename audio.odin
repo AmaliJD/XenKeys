@@ -6,10 +6,10 @@ import "core:math"
 import ma "vendor:miniaudio"
 import wav "waveforms"
 
+// ----------------------------------------------------------------------------------- structs
 Audio_Data :: struct {
     logger: Logger,
     note: Note,
-    note2: Note,
     waveData: Wav_Data
 }
 
@@ -31,6 +31,7 @@ Note :: struct {
     instrument: int,
 }
 
+// ----------------------------------------------------------------------------------- helpers
 update_phase :: proc(note: ^Note, sampleRate: u32) {
     
     note.phase += note.frequency / f32(sampleRate)
@@ -40,6 +41,7 @@ update_phase :: proc(note: ^Note, sampleRate: u32) {
     note.time += dt
 }
 
+// ----------------------------------------------------------------------------------- audio processing
 audio_callback :: proc "c" (pDevice: ^ma.device, pOutput, pInput: rawptr, frameCount: u32) {
     context = runtime.default_context()
     audio_data := (^Audio_Data)(pDevice.pUserData)
@@ -48,14 +50,15 @@ audio_callback :: proc "c" (pDevice: ^ma.device, pOutput, pInput: rawptr, frameC
     audio_data.logger.bufferSize = frameCount
 
     note := &audio_data.note
-    note2 := &audio_data.note2
     gain : f32 = .1
 
-    for i in 0..<frameCount {
+    // ----------------------------------------------------------------------------------- fill output buffer
+    for i in 0..<frameCount
+    {
         value : f32
-        if (audio_data.logger.isPlaying) {
+        if (audio_data.logger.isPlaying)
+        {
             value = wav.get_wave_value(note.phase, audio_data.waveData.waveform, audio_data.waveData.warp_waveform, audio_data.waveData.warp_amt)
-            // value += wav.get_wave_value(note2.phase, audio_data.waveData.waveform, audio_data.waveData.warp_waveform, audio_data.waveData.warp_amt)
         }
         
         output[i * 2]     = value * gain 
