@@ -65,6 +65,5 @@ audio_callback :: proc "c" (pDevice: ^ma.device, pOutput, pInput: rawptr, frameC
         output[i * 2 + 1] = value * gain
 
         update_phase(note, pDevice.sampleRate)
-        update_phase(note2, pDevice.sampleRate)
     }
 }
