@@ -55,7 +55,7 @@ audio_callback :: proc "c" (pDevice: ^ma.device, pOutput, pInput: rawptr, frameC
         value : f32
         if (audio_data.logger.isPlaying) {
             value = wav.get_wave_value(note.phase, audio_data.waveData.waveform, audio_data.waveData.warp_waveform, audio_data.waveData.warp_amt)
-            value += wav.get_wave_value(note2.phase, audio_data.waveData.waveform, audio_data.waveData.warp_waveform, audio_data.waveData.warp_amt)
+            // value += wav.get_wave_value(note2.phase, audio_data.waveData.waveform, audio_data.waveData.warp_waveform, audio_data.waveData.warp_amt)
         }
         
         output[i * 2]     = value * gain 
