@@ -156,7 +156,7 @@ sine_to_triangle :: proc(phase: f32, warp: f32) -> f32 {
 
 sine_to_saw :: proc(phase: f32, warp: f32) -> f32 {
     s_phase := phase
-    _warp := math.pow(warp, .5)
+    _warp := math.pow(warp, .7)
 
     if _warp == 1 { return saw(phase) }
 
@@ -170,7 +170,7 @@ sine_to_saw :: proc(phase: f32, warp: f32) -> f32 {
         s_phase = remap(s_phase, low, high, .25, .75)
         // return sine(s_phase)
         saw_remapped := saw(remap(phase, low, high, 0, 1))
-        return math.lerp(sine(s_phase), saw_remapped, _warp)
+        return math.lerp(sine(s_phase), saw_remapped, _warp * _warp * _warp)
     }
     else {
         s_phase = remap(s_phase, high, 1, .75, 1)
@@ -253,7 +253,7 @@ saw_to_square :: proc(phase: f32, warp: f32) -> f32 {
 }
 
 // saw_to_square :: proc(phase: f32, warp: f32) -> f32 {
-//     _warp := math.pow(warp, .05)
+//     _warp := math.pow(warp, .01)
 
 //     if _warp == 1 { return square(phase) }
 //     _phase := phase
