@@ -17,8 +17,9 @@ Waveform :: enum {
     Test
 }
 
-harmonics : []f32 = {1, 2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 51, 53, 59, 61} // prime
+// harmonics : []f32 = {1, 2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 51, 53, 59, 61} // prime
 // harmonics : []f32 = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32} // saw
+harmonics : []f32 = {1, 3, 5, 7, 9, 11, 13, 15, 17, 19, 21, 23, 25, 27, 29, 31, 33, 35, 37, 39, 41} // square
 // harmonics : []f32 = {1, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32, 34, 36, 38, 40, 42, 44, 46, 48, 50} // quarter circle
 // harmonics : []f32 = {1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144} // fibbonaci bells
 volume_limiter : f32 = 3
@@ -37,8 +38,7 @@ get_wave_value :: proc(phase: f32, waveform: Waveform, waveform2: Waveform, warp
         case 11:
             value = triangle(_phase) * (1 if get_raw else TRIANGLE_SCALE)
         case 22:
-            // value = square_to_square(_phase, warp) * (1 if get_raw else SQUARE_SCALE)
-            value = square(_phase) * (1 if get_raw else SQUARE_SCALE)
+            value = square_to_square(_phase, warp) * (1 if get_raw else SQUARE_SCALE)
         case 33:
             value = saw(_phase) * (1 if get_raw else SAW_SCALE)
         case 01:
@@ -236,31 +236,7 @@ triangle_to_saw :: proc(phase: f32, warp: f32) -> f32 {
 }
 
 square :: proc(phase: f32) -> f32 {
-    // return 1 if phase < .5 else -1
-    value : f32 = 1 if phase < .5 else -1
-    dt := f32(220.0 / 44100.0)
-    value -= polyblep(phase, dt)
-    t : f32 = phase + f32(.5)
-    if t >= 1.0 {
-        t -= 1.0
-    }
-    value += polyblep(t, dt)
-    return value
-}
-
-polyblep :: proc(t, dt: f32) -> f32 {
-    _t := t
-    
-    if _t < dt {
-        _t /= dt
-        return _t + _t - _t * _t - 1
-    }
-    else if _t > 1 - dt {
-        _t = (_t - 1) / dt
-        return _t * _t + _t + _t + 1
-    }
-
-    return 0
+    return 1 if phase < .5 else -1
 }
 
 square_to_square :: proc(phase: f32, warp: f32) -> f32 {
