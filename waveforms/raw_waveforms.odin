@@ -76,8 +76,8 @@ sine_to_saw :: proc(phase: f32, warp: f32) -> f32 {
 
     if _warp == 1 { return saw(phase) }
 
-    low := f32(math.lerp(f32(0), f32(.25), f32(1) - _warp))
-    high := f32(math.lerp(f32(.75), f32(1), _warp))
+    low := f32(mathx.lerp(0, .25, 1 - _warp))
+    high := f32(mathx.lerp(f32(.75), f32(1), _warp))
     if s_phase <= low {
         s_phase = mathx.remap(s_phase, 0, low, 0, .25)
         return sine(s_phase)

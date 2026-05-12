@@ -1,10 +1,10 @@
 package waveforms
 
-@private TRIANGLE_SCALE :: f32(.9)
-@private SQUARE_SCALE   :: f32(0.35)
-@private SAW_SCALE      :: f32(0.4)
-@private NIPPLE_SCALE   :: f32(0.5)
-@private X_SCALE        :: f32(0.8)
+@private TRIANGLE_SCALE     :: f32(.9)
+@private SQUARE_SCALE       :: f32(0.35)
+@private SAW_SCALE          :: f32(0.4)
+@private SINE_PULSE_SCALE   :: f32(0.5)
+@private X_SCALE            :: f32(0.8)
 
 Waveform :: enum {
     Sine,
@@ -13,6 +13,11 @@ Waveform :: enum {
     Saw,        // all harmonics, 1/n
     X,
     Test
+}
+
+Waveform_Pair :: struct {
+    wave_1: Waveform,
+    wave_2: Waveform
 }
 
 // harmonics : []f32 = {1, 2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 51, 53, 59, 61} // prime
