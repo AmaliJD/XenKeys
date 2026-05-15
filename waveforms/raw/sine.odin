@@ -34,7 +34,7 @@ sine_to_pulse :: proc(phase, warp: f32) -> f32
     return sine(_phase)
 }
 
-sine_to_pulse_phase_mod :: proc(phase, warp: f32) -> f32
+sine_to_pulse_phase_mod :: proc(phase, warp: f32) -> f32 // use different function
 {
     k := 1 + 8 * warp
     t := 2 * phase - 1

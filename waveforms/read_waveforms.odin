@@ -36,7 +36,7 @@ get_wave_value :: proc(phase: f32, wav_1: Waveform, wav_2: Waveform, warp: f32 =
             if !unscaled { scale = mathx.lerp(TRIANGLE_SCALE, 1, warp) }
 
         case waveform_pair(.Triangle, .Triangle):
-            value = raw.triangle(_phase)
+            value = raw.triangle_to_pulse(_phase, warp)
             if !unscaled { scale = TRIANGLE_SCALE }
 
         case waveform_pair(.Square, .Square):
