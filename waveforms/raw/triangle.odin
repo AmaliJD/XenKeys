@@ -5,7 +5,7 @@ import "../../mathx"
 
 
 // ----------------------------------------------------------------------------------- triangle
-triangle :: proc(phase: flt) -> flt
+triangle :: proc(phase: f32) -> f32
 {
     _phase := phase
     if _phase -= .25; _phase < 0
@@ -16,7 +16,7 @@ triangle :: proc(phase: flt) -> flt
 }
 
 // ----------------------------------------------------------------------------------- morph to pulse
-triangle_to_pulse :: proc(phase, warp: flt) -> flt
+triangle_to_pulse :: proc(phase, warp: f32) -> f32
 {
     _warp := math.pow(warp, .75)
 
@@ -28,8 +28,8 @@ triangle_to_pulse :: proc(phase, warp: flt) -> flt
     width := mathx.lerp(.5, PULSE_LOW_LIMIT * 4, _warp)
     half_width := width / 2
 
-    bounds_1 := [2]flt{.25 - half_width, .25 + half_width}
-    bounds_2 := [2]flt{.75 - half_width, .75 + half_width}
+    bounds_1 := [2]f32{.25 - half_width, .25 + half_width}
+    bounds_2 := [2]f32{.75 - half_width, .75 + half_width}
 
     if phase >= bounds_1.x && phase <= bounds_1.y
     {
@@ -49,14 +49,14 @@ triangle_to_pulse :: proc(phase, warp: flt) -> flt
 
 
 // ----------------------------------------------------------------------------------- morph to sine
-triangle_to_sine :: proc(phase, warp: flt) -> flt // lerp
+triangle_to_sine :: proc(phase, warp: f32) -> f32 // lerp
 {
     return sine_to_triangle(phase, 1 - warp)
 }
 
 
 // ----------------------------------------------------------------------------------- morph to square
-triangle_to_square :: proc(phase, warp: flt) -> flt
+triangle_to_square :: proc(phase, warp: f32) -> f32
 {
     // return math.lerp(triangle(phase), square(phase), warp)
     if warp == 1
@@ -71,14 +71,14 @@ triangle_to_square :: proc(phase, warp: flt) -> flt
     }
 }
 
-// triangle_to_square :: proc(phase, warp: flt) -> flt
+// triangle_to_square :: proc(phase, warp: f32) -> f32
 // {
 //     return math.lerp(triangle(phase), square(phase), warp)
 // }
 
 
 // ----------------------------------------------------------------------------------- morph to saw
-triangle_to_saw :: proc(phase, warp: flt) -> flt
+triangle_to_saw :: proc(phase, warp: f32) -> f32
 {
     _warp := mathx.remap(warp, 0, 1, .5, 0)
     if phase < _warp // Upward ramp

@@ -5,14 +5,14 @@ import "../../mathx"
 
 
 // ----------------------------------------------------------------------------------- saw
-saw :: proc(phase: flt) -> flt
+saw :: proc(phase: f32) -> f32
 {
     return 1 - phase * 2
 }
 
 
 // ----------------------------------------------------------------------------------- morph to pulse
-saw_to_pulse :: proc(phase, warp: flt) -> flt
+saw_to_pulse :: proc(phase, warp: f32) -> f32
 {
     _warp := math.pow(warp, .5)
 
@@ -40,7 +40,7 @@ saw_to_pulse :: proc(phase, warp: flt) -> flt
     }
 }
 
-// saw_to_pulse :: proc(phase, warp: flt) -> flt
+// saw_to_pulse :: proc(phase, warp: f32) -> f32
 // {
 //     _warp := math.pow(warp, .2)
 
@@ -62,7 +62,7 @@ saw_to_pulse :: proc(phase, warp: flt) -> flt
 //     }
 // }
 
-// saw_to_pulse :: proc(phase, warp: flt) -> flt
+// saw_to_pulse :: proc(phase, warp: f32) -> f32
 // {
 //     _warp := warp//math.pow(warp, .2)
 
@@ -91,26 +91,26 @@ saw_to_pulse :: proc(phase, warp: flt) -> flt
 
 
 // ----------------------------------------------------------------------------------- morph to sine
-saw_to_sine :: proc(phase, warp: flt) -> flt
+saw_to_sine :: proc(phase, warp: f32) -> f32
 {
     return sine_to_saw(phase, 1 - warp)
 }
 
 
 // ----------------------------------------------------------------------------------- morph to triangle
-saw_to_triangle :: proc(phase, warp: flt) -> flt
+saw_to_triangle :: proc(phase, warp: f32) -> f32
 {
     return triangle_to_saw(phase, 1 - warp)
 }
 
 
 // ----------------------------------------------------------------------------------- morph to square
-saw_to_square :: proc(phase, warp: flt) -> flt
+saw_to_square :: proc(phase, warp: f32) -> f32
 {
     return math.lerp(saw(phase), square(phase), warp)
 }
 
-// saw_to_square :: proc(phase, warp: flt) -> flt
+// saw_to_square :: proc(phase, warp: f32) -> f32
 // {
 //     _warp := math.pow(warp, .01)
 

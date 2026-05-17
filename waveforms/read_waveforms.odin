@@ -5,14 +5,14 @@ import "../mathx"
 import "raw"
 
 
-get_wave_value :: proc(phase: f64, wav_1: Waveform, wav_2: Waveform, warp: f64 = 0, unscaled: bool = false) -> f64 {
-    value: f64
+get_wave_value :: proc(phase: f32, wav_1: Waveform, wav_2: Waveform, warp: f32 = 0, unscaled: bool = false) -> f32 {
+    value: f32
     // waveform_pair := int(waveform) * 10 + int(waveform2)
 
-    phase_quantize : f64 = 32
-    _phase := phase//f64(math.round(phase * phase_quantize)) / phase_quantize
+    phase_quantize : f32 = 32
+    _phase := phase//f32(math.round(phase * phase_quantize)) / phase_quantize
 
-    scale : f64 = 1
+    scale : f32 = 1
     switch waveform_pair(wav_1, wav_2)
     {
         case waveform_pair(.Sine, .Sine):
@@ -84,15 +84,15 @@ get_wave_value :: proc(phase: f64, wav_1: Waveform, wav_2: Waveform, warp: f64 =
         //     value = test(_phase)
     }
 
-    value_quantize : f64 = 32
-    _value := value//f64(math.round(value * value_quantize)) / value_quantize
+    value_quantize : f32 = 32
+    _value := value//f32(math.round(value * value_quantize)) / value_quantize
 
     return _value * scale
 }
 
-get_wave_values :: proc(buffer: []f32, start_phase, end_phase: f64, wav_1: Waveform, wav_2: Waveform, warp: f64) {
+get_wave_values :: proc(buffer: []f32, start_phase, end_phase: f32, wav_1: Waveform, wav_2: Waveform, warp: f32) {
     count := len(buffer)
-    step := (end_phase - start_phase) / f64(count - 1)
+    step := (end_phase - start_phase) / f32(count - 1)
 
     phase := start_phase
     for i in 0..<count {

@@ -157,7 +157,7 @@ main :: proc() {
         imgui.End()
 
         imgui.Begin("Waveform", nil, window_flags.default)
-        wav.get_wave_values(waveform_visual[:], 0, 1, audio_data.waveData.waveform, audio_data.waveData.warp_waveform, audio_data.waveData.warp_amt)
+        wav.get_wave_values(waveform_visual[:], 0, 1, audio_data.waveData.waveform, audio_data.waveData.warp_waveform, f32(audio_data.waveData.warp_amt))
         imgui.PlotLines(
             "##Waveform",
             &waveform_visual[0],

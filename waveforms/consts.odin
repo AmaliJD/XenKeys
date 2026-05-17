@@ -1,10 +1,10 @@
 package waveforms
 
-@private TRIANGLE_SCALE     :: f64(.9)
-@private SQUARE_SCALE       :: f64(0.35)
-@private SAW_SCALE          :: f64(0.4)
-@private SINE_PULSE_SCALE   :: f64(0.5)
-@private X_SCALE            :: f64(0.8)
+@private TRIANGLE_SCALE     :: f32(.9)
+@private SQUARE_SCALE       :: f32(0.35)
+@private SAW_SCALE          :: f32(0.4)
+@private SINE_PULSE_SCALE   :: f32(0.5)
+@private X_SCALE            :: f32(0.8)
 
 Waveform :: enum {
     Sine,
@@ -25,4 +25,4 @@ Waveform_Pair :: struct {
 harmonics : []int = {1, 3, 5, 7, 9, 11, 13, 15, 17, 19, 21, 23, 25, 27, 29, 31, 33, 35, 37, 39, 41} // square
 // harmonics : []int = {1, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32, 34, 36, 38, 40, 42, 44, 46, 48, 50} // quarter circle
 // harmonics : []int = {1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144} // fibbonaci bells
-volume_limiter : f64 = 3
+volume_limiter : f32 = 3

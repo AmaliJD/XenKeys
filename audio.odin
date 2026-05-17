@@ -50,19 +50,19 @@ audio_callback :: proc "c" (pDevice: ^ma.device, pOutput, pInput: rawptr, frameC
     audio_data.logger.bufferSize = frameCount
 
     note := &audio_data.note
-    gain : f64 = .1
+    gain : f32 = .1
 
     // ----------------------------------------------------------------------------------- fill output buffer
     for i in 0..<frameCount
     {
-        value : f64
+        value : f32
         if (audio_data.logger.isPlaying)
         {
-            value = wav.get_wave_value(note.phase, audio_data.waveData.waveform, audio_data.waveData.warp_waveform, audio_data.waveData.warp_amt)
+            value = wav.get_wave_value(f32(note.phase), audio_data.waveData.waveform, audio_data.waveData.warp_waveform, f32(audio_data.waveData.warp_amt))
         }
         
-        output[i * 2]     = f32(value * gain)
-        output[i * 2 + 1] = f32(value * gain)
+        output[i * 2]     = value * gain
+        output[i * 2 + 1] = value * gain
 
         update_phase(note, pDevice.sampleRate)
     }
