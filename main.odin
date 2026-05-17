@@ -88,7 +88,7 @@ main :: proc() {
     altKeyPressed: bool
     warp_up: bool
     warp_move:=false
-    warp_speed:=f32(.001)
+    warp_speed:=f64(.001)
 
     for !glfw.WindowShouldClose(window)
     {

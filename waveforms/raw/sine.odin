@@ -5,14 +5,14 @@ import "../../mathx"
 
 
 // ----------------------------------------------------------------------------------- sine
-sine :: proc(phase: f32) -> f32
+sine :: proc(phase: flt) -> flt
 {
-    return math.sin_f32(phase * math.TAU)
+    return math.sin_f64(phase * math.TAU)
 }
 
 
 // ----------------------------------------------------------------------------------- morph to pusle
-sine_to_pulse :: proc(phase, warp: f32) -> f32
+sine_to_pulse :: proc(phase, warp: flt) -> flt
 {
     _warp := warp//math.pow(warp, .5)
 
@@ -34,7 +34,7 @@ sine_to_pulse :: proc(phase, warp: f32) -> f32
     return sine(_phase)
 }
 
-sine_to_pulse_phase_mod :: proc(phase, warp: f32) -> f32 // use different function
+sine_to_pulse_phase_mod :: proc(phase, warp: flt) -> flt // use different function
 {
     k := 1 + 8 * warp
     t := 2 * phase - 1
@@ -45,14 +45,14 @@ sine_to_pulse_phase_mod :: proc(phase, warp: f32) -> f32 // use different functi
 
 
 // ----------------------------------------------------------------------------------- morph to triangle
-sine_to_triangle :: proc(phase, warp: f32) -> f32 // lerp
+sine_to_triangle :: proc(phase, warp: flt) -> flt // lerp
 {
     return math.lerp(sine(phase), triangle(phase), warp)
 }
 
 
 // ----------------------------------------------------------------------------------- morph to square
-sine_to_square :: proc(phase, warp: f32) -> f32
+sine_to_square :: proc(phase, warp: flt) -> flt
 {
     _warp := math.pow(warp, .5)
 
@@ -74,14 +74,14 @@ sine_to_square :: proc(phase, warp: f32) -> f32
     return sine(_phase)
 }
 
-sine_to_square_phase_mod :: proc(phase, warp: f32) -> f32
+sine_to_square_phase_mod :: proc(phase, warp: flt) -> flt
 {
     p := 1 / (1 - warp)
     t := 2 * phase - 1
     return .5 + .5 * math.sign(t) * math.pow(math.abs(t), p)
 }
 
-sine_to_square_clamp :: proc(phase, warp: f32) -> f32
+sine_to_square_clamp :: proc(phase, warp: flt) -> flt
 {
     if (warp < 1)
     {
@@ -95,7 +95,7 @@ sine_to_square_clamp :: proc(phase, warp: f32) -> f32
 
 
 // ----------------------------------------------------------------------------------- morph to saw
-sine_to_saw :: proc(phase, warp: f32) -> f32
+sine_to_saw :: proc(phase, warp: flt) -> flt
 {
     _warp := math.pow(warp, .7)
 
@@ -127,12 +127,18 @@ sine_to_saw :: proc(phase, warp: f32) -> f32
     }
 }
 
-sine_to_saw_phase_mod :: proc(phase, warp: f32) -> f32
+sine_between_peaks :: proc(phase, warp: flt) -> flt
+{
+    _phase := sine_to_saw_phase_mod(phase, warp)
+    return sine(_phase)
+}
+
+sine_to_saw_phase_mod :: proc(phase, warp: flt) -> flt
 {
     slope_1 := phase
     slope_2 := phase * .5 + .25
 
-    y : f32 = .5
+    y : flt = .5
     if phase < .5
     {
         y = math.lerp(slope_1, slope_2, mathx.remap(phase, 0, .5, 0, 1))
@@ -143,10 +149,4 @@ sine_to_saw_phase_mod :: proc(phase, warp: f32) -> f32
     }
     
     return slope_2
-}
-
-sine_between_peaks :: proc(phase, warp: f32) -> f32
-{
-    _phase := sine_to_saw_phase_mod(phase, warp)
-    return sine(_phase)
 }
