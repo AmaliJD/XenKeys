@@ -1,8 +1,8 @@
-package raw
+package waveforms
 
 import "core:math"
 import "core:math/rand"
-import "../../mathx"
+import "../mathx"
 
 
 // ----------------------------------------------------------------------------------- white

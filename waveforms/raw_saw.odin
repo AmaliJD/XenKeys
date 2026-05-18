@@ -1,7 +1,7 @@
-package raw
+package waveforms
 
 import "core:math"
-import "../../mathx"
+import "../mathx"
 
 
 // ----------------------------------------------------------------------------------- saw
