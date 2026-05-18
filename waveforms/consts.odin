@@ -5,11 +5,13 @@ TRIANGLE_SCALE      :: f32(.9)
 SQUARE_SCALE        :: f32(0.35)
 SAW_SCALE           :: f32(0.4)
 SINE_PULSE_SCALE    :: f32(0.5)
+NOISE_SCALE         :: f32(0.4)
 
 PULSE_LOW_LIMIT     :: f32(.005)
 PULSE_HIGH_LIMIT    :: f32(.995)
 
-Waveform :: enum {
+Waveform :: enum
+{
     Sine,
     Triangle,   // odd harmonics, 1/n², alternating signs
     Square,     // odd harmonics, 1/n
@@ -17,7 +19,14 @@ Waveform :: enum {
     White,      // random
 }
 
-Waveform_Pair_Proc :: struct {
+Waveform_Pair :: struct
+{
+    wave_1: Waveform,
+    wave_2: Waveform
+}
+
+Waveform_Pair_Proc :: struct
+{
     wave_proc:      proc(f32, f32) -> f32,
     start_scale:    f32,
     end_scale:      f32,
