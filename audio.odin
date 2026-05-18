@@ -7,24 +7,28 @@ import ma "vendor:miniaudio"
 import wav "waveforms"
 
 // ----------------------------------------------------------------------------------- structs
-Audio_Data :: struct {
+Audio_Data :: struct
+{
     logger: Logger,
     note: Note,
     waveData: Wav_Data
 }
 
-Logger :: struct {
+Logger :: struct
+{
     bufferSize: u32,
     isPlaying: bool,
 }
 
-Wav_Data :: struct {
+Wav_Data :: struct
+{
     waveform: wav.Waveform,
     warp_waveform: wav.Waveform,
     warp_amt: f64,
 }
 
-Note :: struct {
+Note :: struct
+{
     frequency: f64,
     phase: f64,
     time: f64,
@@ -32,7 +36,8 @@ Note :: struct {
 }
 
 // ----------------------------------------------------------------------------------- helpers
-update_phase :: proc(note: ^Note, sampleRate: u32) {
+update_phase :: proc(note: ^Note, sampleRate: u32)
+{
     
     note.phase += note.frequency / f64(sampleRate)
     if note.phase >= 1 do note.phase -= 1
@@ -42,7 +47,8 @@ update_phase :: proc(note: ^Note, sampleRate: u32) {
 }
 
 // ----------------------------------------------------------------------------------- audio processing
-audio_callback :: proc "c" (pDevice: ^ma.device, pOutput, pInput: rawptr, frameCount: u32) {
+audio_callback :: proc "c" (pDevice: ^ma.device, pOutput, pInput: rawptr, frameCount: u32)
+{
     context = runtime.default_context()
     audio_data := (^Audio_Data)(pDevice.pUserData)
     output := ([^]f32)(pOutput)
@@ -58,7 +64,12 @@ audio_callback :: proc "c" (pDevice: ^ma.device, pOutput, pInput: rawptr, frameC
         value : f32
         if (audio_data.logger.isPlaying)
         {
-            value = wav.get_wave_value(f32(note.phase), audio_data.waveData.waveform, audio_data.waveData.warp_waveform, f32(audio_data.waveData.warp_amt))
+            value = wav.get_wave_value(
+                f32(note.phase),
+                audio_data.waveData.waveform,
+                audio_data.waveData.warp_waveform,
+                f32(audio_data.waveData.warp_amt)
+            )
         }
         
         output[i * 2]     = value * gain

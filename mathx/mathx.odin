@@ -43,7 +43,7 @@ inverse_lerp_64 :: #force_inline proc(min, max, value: f64) -> f64
 
 
 // ----------------------------------------------------------------------------------- remap
-remap_32 :: proc
+remap :: proc
 {
     remap_32,
     remap_64,
