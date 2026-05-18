@@ -6,6 +6,7 @@ import "core:math"
 import ma "vendor:miniaudio"
 import wav "waveforms"
 
+
 // ----------------------------------------------------------------------------------- structs
 Audio_Data :: struct
 {
@@ -35,6 +36,7 @@ Note :: struct
     instrument: int,
 }
 
+
 // ----------------------------------------------------------------------------------- helpers
 update_phase :: proc(note: ^Note, sampleRate: u32)
 {
@@ -45,6 +47,7 @@ update_phase :: proc(note: ^Note, sampleRate: u32)
     dt := 1.0 / f64(sampleRate)
     note.time += dt
 }
+
 
 // ----------------------------------------------------------------------------------- audio processing
 audio_callback :: proc "c" (pDevice: ^ma.device, pOutput, pInput: rawptr, frameCount: u32)
@@ -57,6 +60,7 @@ audio_callback :: proc "c" (pDevice: ^ma.device, pOutput, pInput: rawptr, frameC
 
     note := &audio_data.note
     gain : f32 = .1
+
 
     // ----------------------------------------------------------------------------------- fill output buffer
     for i in 0..<frameCount

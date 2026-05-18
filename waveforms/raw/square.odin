@@ -11,8 +11,8 @@ square :: proc(phase: f32) -> f32
 }
 
 
-// ----------------------------------------------------------------------------------- square duty cycle
-square_shift_duty_cycle :: proc(phase, warp: f32) -> f32
+// ----------------------------------------------------------------------------------- morph to pulse
+square_to_pulse :: proc(phase, warp: f32) -> f32
 {
     _warp := mathx.remap(warp, 0, 1, .5, 1)
     return 1 if phase < math.clamp(_warp, PULSE_LOW_LIMIT, PULSE_HIGH_LIMIT) else -1

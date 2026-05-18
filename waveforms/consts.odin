@@ -1,5 +1,6 @@
 package waveforms
 
+@private SINE_SCALE         :: f32(1)
 @private TRIANGLE_SCALE     :: f32(.9)
 @private SQUARE_SCALE       :: f32(0.35)
 @private SAW_SCALE          :: f32(0.4)
@@ -11,7 +12,7 @@ Waveform :: enum {
     Triangle,   // odd harmonics, 1/n², alternating signs
     Square,     // odd harmonics, 1/n
     Saw,        // all harmonics, 1/n
-    X,
+    White,      // random
     Test
 }
 
