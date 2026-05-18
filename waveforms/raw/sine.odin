@@ -118,7 +118,7 @@ sine_to_saw :: proc(phase, warp: f32) -> f32
         _phase = mathx.remap(_phase, low, high, .25, .75)
         // return sine(_phase)
         saw_remapped := saw(mathx.remap(phase, low, high, 0, 1))
-        return math.lerp(sine(_phase), saw_remapped, _warp * _warp * _warp)
+        return mathx.lerp(sine(_phase), saw_remapped, _warp * _warp * _warp)
     }
     else
     {
