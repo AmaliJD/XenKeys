@@ -38,3 +38,10 @@ square_to_saw :: proc(phase, warp: f32) -> f32
 {
     return saw_to_square(phase, 1 - warp)
 }
+
+
+// ----------------------------------------------------------------------------------- morph to white
+square_to_white :: proc(phase, warp: f32) -> f32
+{
+    return mathx.lerp(square(phase), white(phase), warp)
+}

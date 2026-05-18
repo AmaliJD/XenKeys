@@ -131,3 +131,10 @@ saw_to_square :: proc(phase, warp: f32) -> f32
     
 //     return math.lerp(saw(phase), sine(_phase), warp)
 // }
+
+
+// ----------------------------------------------------------------------------------- morph to white
+saw_to_white :: proc(phase, warp: f32) -> f32
+{
+    return mathx.lerp(saw(phase), white(phase), warp)
+}

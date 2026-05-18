@@ -97,3 +97,10 @@ triangle_to_saw :: proc(phase, warp: f32) -> f32
         return 1.0 - ((phase - _warp) / (1.0 - _warp)) * 2.0
     }
 }
+
+
+// ----------------------------------------------------------------------------------- morph to white
+triangle_to_white :: proc(phase, warp: f32) -> f32
+{
+    return mathx.lerp(triangle(phase), white(phase), warp)
+}

@@ -14,4 +14,5 @@ Morphing_Waveform :: enum {
     Triangle,
     Square,
     Saw,
+    White,
 }

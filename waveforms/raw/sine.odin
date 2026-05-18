@@ -150,3 +150,10 @@ sine_to_saw_phase_mod :: proc(phase, warp: f32) -> f32
     
     return slope_2
 }
+
+
+// ----------------------------------------------------------------------------------- morph to white
+sine_to_white :: proc(phase, warp: f32) -> f32
+{
+    return mathx.lerp(sine(phase), white(phase), warp)
+}
