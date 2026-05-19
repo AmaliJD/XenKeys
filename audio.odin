@@ -12,20 +12,20 @@ Audio_Data :: struct
 {
     logger: Logger,
     note: Note,
-    waveData: Wav_Data
+    wave_data: Wav_Data
 }
 
 Logger :: struct
 {
-    bufferSize: u32,
-    isPlaying: bool,
+    buffer_size: u32,
+    is_playing: bool,
 }
 
 Wav_Data :: struct
 {
-    waveform: wav.Waveform,
-    warp_waveform: wav.Waveform,
-    warp_amt: f64,
+    waveform_1: wav.Waveform,
+    waveform_2: wav.Waveform,
+    warp: f32,
 }
 
 Note :: struct
@@ -40,7 +40,6 @@ Note :: struct
 // ----------------------------------------------------------------------------------- helpers
 update_phase :: proc(note: ^Note, sampleRate: u32)
 {
-    
     note.phase += note.frequency / f64(sampleRate)
     if note.phase >= 1 do note.phase -= 1
 
@@ -56,28 +55,29 @@ audio_callback :: proc "c" (pDevice: ^ma.device, pOutput, pInput: rawptr, frameC
     audio_data := (^Audio_Data)(pDevice.pUserData)
     output := ([^]f32)(pOutput)
 
-    audio_data.logger.bufferSize = frameCount
+    audio_data.logger.buffer_size = frameCount
 
     note := &audio_data.note
-    gain : f32 = .1
+    gain := f32(.1)
 
 
     // ----------------------------------------------------------------------------------- fill output buffer
     for i in 0..<frameCount
     {
         value : f32
-        if (audio_data.logger.isPlaying)
+        if (audio_data.logger.is_playing)
         {
             value = wav.get_wave_value(
                 f32(note.phase),
-                audio_data.waveData.waveform,
-                audio_data.waveData.warp_waveform,
-                f32(audio_data.waveData.warp_amt)
+                audio_data.wave_data.waveform_1,
+                audio_data.wave_data.waveform_2,
+                audio_data.wave_data.warp,
             )
         }
         
-        output[i * 2]     = value * gain
-        output[i * 2 + 1] = value * gain
+        output_value := value * gain
+        output[i * 2]     = output_value
+        output[i * 2 + 1] = output_value
 
         update_phase(note, pDevice.sampleRate)
     }

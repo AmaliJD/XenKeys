@@ -12,6 +12,7 @@ import ma "vendor:miniaudio"
 
 import wav "waveforms"
 
+
 main :: proc() {
     // ----------------------------------------------------------------------------------- init glfw
     if !glfw.Init()
@@ -88,7 +89,7 @@ main :: proc() {
     altKeyPressed: bool
     warp_up: bool
     warp_move:=false
-    warp_speed:=f64(.001)
+    warp_speed:=f32(.001)
 
     for !glfw.WindowShouldClose(window)
     {
@@ -96,22 +97,22 @@ main :: proc() {
         glfw.PollEvents()
         if glfw.GetKey(window, glfw.KEY_SPACE) == glfw.PRESS && !spaceKeyPressed
         {
-            audio_data.logger.isPlaying = !audio_data.logger.isPlaying
+            audio_data.logger.is_playing = !audio_data.logger.is_playing
         }
         spaceKeyPressed = glfw.GetKey(window, glfw.KEY_SPACE) == glfw.PRESS
         
         if glfw.GetKey(window, glfw.KEY_Z) == glfw.PRESS && !zKeyPressed
         {
-            audio_data.waveData.warp_amt = 0
+            audio_data.wave_data.warp = 0
             warp_up = false
-            audio_data.waveData.waveform = wav.Waveform((int(audio_data.waveData.waveform) + 1) % len(wav.Waveform))
+            audio_data.wave_data.waveform_1 = wav.Waveform((int(audio_data.wave_data.waveform_1) + 1) % len(wav.Waveform))
         }
         zKeyPressed = glfw.GetKey(window, glfw.KEY_Z) == glfw.PRESS
 
         if glfw.GetKey(window, glfw.KEY_X) == glfw.PRESS && !xKeyPressed
         {
-            audio_data.waveData.warp_waveform = wav.Waveform((int(audio_data.waveData.warp_waveform) + 1) % 5)
-            audio_data.waveData.warp_amt = 0
+            audio_data.wave_data.waveform_2 = wav.Waveform((int(audio_data.wave_data.waveform_2) + 1) % 5)
+            audio_data.wave_data.warp = 0
             warp_up = false
         }
         xKeyPressed = glfw.GetKey(window, glfw.KEY_X) == glfw.PRESS
@@ -124,17 +125,17 @@ main :: proc() {
 
         if warp_move
         {
-            if warp_up { audio_data.waveData.warp_amt += warp_speed }
-            else { audio_data.waveData.warp_amt -= warp_speed }
+            if warp_up { audio_data.wave_data.warp += warp_speed }
+            else { audio_data.wave_data.warp -= warp_speed }
 
-            if audio_data.waveData.warp_amt <= 0 && !warp_up
+            if audio_data.wave_data.warp <= 0 && !warp_up
             {
-                audio_data.waveData.warp_amt = 0
+                audio_data.wave_data.warp = 0
                 warp_up = true
             }
-            else if audio_data.waveData.warp_amt >= 1 && warp_up
+            else if audio_data.wave_data.warp >= 1 && warp_up
             {
-                audio_data.waveData.warp_amt = 1
+                audio_data.wave_data.warp = 1
                 warp_up = false
             }
         }
@@ -148,12 +149,12 @@ main :: proc() {
 
         // ----------------------------------------------------------------------------------- ui
         imgui.Begin("Log", nil, window_flags.invisible)
-        imgui.Text("Buffer Size: %d", audio_data.logger.bufferSize)
-        imgui.Text("Playing Sound (Spacebar): %d", audio_data.logger.isPlaying)
+        imgui.Text("Buffer Size: %d", audio_data.logger.buffer_size)
+        imgui.Text("Playing Sound (Spacebar): %d", audio_data.logger.is_playing)
         imgui.Separator()
-        imgui.Text(fmt.ctprint("Wave 1:", audio_data.waveData.waveform))
-        imgui.Text(fmt.ctprint("Wave 2:", audio_data.waveData.warp_waveform))
-        imgui.Text("warp amt: %.2f", audio_data.waveData.warp_amt)
+        imgui.Text(fmt.ctprint("Wave 1:", audio_data.wave_data.waveform_1))
+        imgui.Text(fmt.ctprint("Wave 2:", audio_data.wave_data.waveform_2))
+        imgui.Text("warp amt: %.2f", audio_data.wave_data.warp)
         imgui.End()
 
         imgui.Begin("Waveform", nil, window_flags.default)
@@ -161,9 +162,9 @@ main :: proc() {
             waveform_visual[:],
             0,
             1,
-            audio_data.waveData.waveform,
-            audio_data.waveData.warp_waveform,
-            f32(audio_data.waveData.warp_amt)
+            audio_data.wave_data.waveform_1,
+            audio_data.wave_data.waveform_2,
+            audio_data.wave_data.warp,
         )
         imgui.PlotLines(
             "##Waveform",

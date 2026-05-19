@@ -4,7 +4,7 @@ import "core:math"
 import "../mathx"
 
 
-Raw_Waveform_Pair_Proc_Matrix := [Waveform][Waveform]Waveform_Pair_Proc {
+Waveform_Warp_Matrix := [Waveform][Waveform]Waveform_Pair_Proc {
     .Sine = {
         .Sine =     { sine_to_pulse,        SINE_SCALE,     SINE_PULSE_SCALE },
         .Triangle = { sine_to_triangle,     SINE_SCALE,     TRIANGLE_SCALE },
@@ -43,9 +43,9 @@ Raw_Waveform_Pair_Proc_Matrix := [Waveform][Waveform]Waveform_Pair_Proc {
 }
 
 
-get_wave_value :: proc(phase: f32, wav_1: Waveform, wav_2: Waveform, warp: f32 = 0, unscaled: bool = false) -> f32 {
+get_wave_value :: proc(phase: f32, wav_1, wav_2: Waveform, warp: f32 = 0, unscaled: bool = false) -> f32
+{
     value: f32
-    // waveform_pair := int(waveform) * 10 + int(waveform2)
 
     phase_quantize : f32 = 32
     _phase := phase//f32(math.round(phase * phase_quantize)) / phase_quantize
@@ -153,7 +153,7 @@ get_wave_value :: proc(phase: f32, wav_1: Waveform, wav_2: Waveform, warp: f32 =
 
     // if wav_limit := int(Waveform.White); int(wav_1) <= wav_limit && int(wav_2) <= wav_limit
     // {
-    //     _proc := Raw_Waveform_Pair_Proc_Matrix[wav_1][wav_2]
+    //     _proc := Waveform_Warp_Matrix[wav_1][wav_2]
     //     value = _proc.wave_proc(_phase, warp)
     //     if !unscaled { scale = mathx.lerp(_proc.start_scale, _proc.end_scale, warp) }
     // }
@@ -164,12 +164,14 @@ get_wave_value :: proc(phase: f32, wav_1: Waveform, wav_2: Waveform, warp: f32 =
     return _value * scale
 }
 
-get_wave_values :: proc(buffer: []f32, start_phase, end_phase: f32, wav_1: Waveform, wav_2: Waveform, warp: f32) {
+get_wave_values :: proc(buffer: []f32, phase_start, phase_end: f32, wav_1, wav_2: Waveform, warp: f32)
+{
     count := len(buffer)
-    step := (end_phase - start_phase) / f32(count - 1)
+    step := (phase_end - phase_start) / f32(count - 1)
 
-    phase := start_phase
-    for i in 0..<count {
+    phase := phase_start
+    for i in 0..<count
+    {
         buffer[i] = f32(get_wave_value(phase, wav_1, wav_2, warp, true))
         phase += step
     }
