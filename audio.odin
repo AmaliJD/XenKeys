@@ -12,6 +12,10 @@ Audio_Data :: struct
 {
     logger: Logger,
     note: Note,
+
+    live_commands: Live_Command_Buffer,
+    notes_list: [dynamic]Note,
+
     wave_data: Wav_Data
 }
 
@@ -73,6 +77,13 @@ audio_callback :: proc "c" (pDevice: ^ma.device, pOutput, pInput: rawptr, frameC
                 audio_data.wave_data.waveform_2,
                 audio_data.wave_data.warp,
             )
+        }
+
+        for audio_data.live_commands.read_index != audio_data.live_commands.write_index
+        {
+            cmd := audio_data.live_commands.buffer[audio_data.live_commands.read_index]
+
+            audio_data.live_commands.read_index = (audio_data.live_commands.read_index + 1) % len(audio_data_ptr.live_commands.buffer)
         }
         
         output_value := value * gain

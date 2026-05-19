@@ -13,6 +13,9 @@ import ma "vendor:miniaudio"
 import wav "waveforms"
 
 
+audio_data_ptr: ^Audio_Data
+
+
 main :: proc() {
     // ----------------------------------------------------------------------------------- init glfw
     if !glfw.Init()
@@ -37,6 +40,7 @@ main :: proc() {
         return
     }
     glfw.MakeContextCurrent(window)
+    glfw.SetKeyCallback(window, key_callback)
 
 
     // ----------------------------------------------------------------------------------- connect window (GLFW) to graphics card (OpenGL)
@@ -46,6 +50,7 @@ main :: proc() {
 
     // ----------------------------------------------------------------------------------- Audio_Data
     audio_data : Audio_Data
+    audio_data_ptr = &audio_data
     audio_data.note.frequency = 220
 
 
