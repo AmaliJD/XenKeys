@@ -13,7 +13,7 @@ import ma "vendor:miniaudio"
 import wav "waveforms"
 
 
-audio_data_ptr: ^Audio_Data
+audio_data: ^Audio_Data
 
 
 main :: proc() {
@@ -49,8 +49,7 @@ main :: proc() {
 
 
     // ----------------------------------------------------------------------------------- Audio_Data
-    audio_data : Audio_Data
-    audio_data_ptr = &audio_data
+    audio_data = new(Audio_Data)
     audio_data.note.frequency = 220
 
 
@@ -61,7 +60,7 @@ main :: proc() {
     device_config.sampleRate        = 44100
     device_config.dataCallback      = audio_callback
     // device_config.periodSizeInFrames = 512 // default is 441
-    device_config.pUserData         = &audio_data
+    device_config.pUserData         = audio_data
 
     device: ma.device
     if ma.device_init(nil, &device_config, &device) != .SUCCESS {
@@ -86,25 +85,24 @@ main :: proc() {
     window_flags := get_window_flags()
 
 
+    // ----------------------------------------------------------------------------------- key input setup
+    init_key_map()
+    defer delete(key_map)
+
+
     // ----------------------------------------------------------------------------------- render loop
     waveform_visual : [256]f32
-    spaceKeyPressed: bool
     zKeyPressed: bool
     xKeyPressed: bool
     altKeyPressed: bool
     warp_up: bool
     warp_move:=false
-    warp_speed:=f32(.001)
+    warp_speed:=f32(.0005)
 
     for !glfw.WindowShouldClose(window)
     {
         // ----------------------------------------------------------------------------------- input
         glfw.PollEvents()
-        if glfw.GetKey(window, glfw.KEY_SPACE) == glfw.PRESS && !spaceKeyPressed
-        {
-            audio_data.logger.is_playing = !audio_data.logger.is_playing
-        }
-        spaceKeyPressed = glfw.GetKey(window, glfw.KEY_SPACE) == glfw.PRESS
         
         if glfw.GetKey(window, glfw.KEY_Z) == glfw.PRESS && !zKeyPressed
         {
@@ -155,7 +153,6 @@ main :: proc() {
         // ----------------------------------------------------------------------------------- ui
         imgui.Begin("Log", nil, window_flags.invisible)
         imgui.Text("Buffer Size: %d", audio_data.logger.buffer_size)
-        imgui.Text("Playing Sound (Spacebar): %d", audio_data.logger.is_playing)
         imgui.Separator()
         imgui.Text(fmt.ctprint("Wave 1:", audio_data.wave_data.waveform_1))
         imgui.Text(fmt.ctprint("Wave 2:", audio_data.wave_data.waveform_2))
