@@ -163,7 +163,7 @@ main :: proc() {
         wav.get_wave_values(
             waveform_visual[:],
             0,
-            1,
+            3,
             audio_data.wave_data.waveform_1,
             audio_data.wave_data.waveform_2,
             audio_data.wave_data.warp,

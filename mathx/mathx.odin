@@ -60,3 +60,10 @@ remap_64 :: #force_inline proc(value, in_min, in_max, out_min, out_max: f64) -> 
     t := inverse_lerp(in_min, in_max, value)
     return math.lerp(out_min, out_max, t)
 }
+
+
+// ----------------------------------------------------------------------------------- other
+wrap_01 :: proc(val: f32) -> f32
+{
+    return val - math.floor(val)
+}

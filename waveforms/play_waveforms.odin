@@ -169,11 +169,20 @@ get_wave_values :: proc(buffer: []f32, phase_start, phase_end: f32, wav_1, wav_2
     count := len(buffer)
     step := (phase_end - phase_start) / f32(count - 1)
 
-    phase := phase_start
+    phase := mathx.wrap_01(phase_start)
     for i in 0..<count
     {
         buffer[i] = f32(get_wave_value(phase, wav_1, wav_2, warp, true))
         phase += step
+        
+        if phase >= 1
+        {
+            phase -= 1
+        }
+        else if phase < 0
+        {
+            phase += 1
+        }
     }
 }
 
