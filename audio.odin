@@ -16,7 +16,6 @@ MAX_NOTES :: 12
 Audio_Data :: struct
 {
     logger: Logger,
-    note: Note,
 
     live_commands: Live_Command_Buffer,
     notes_list: [MAX_NOTES]Note,
@@ -27,7 +26,6 @@ Audio_Data :: struct
 Logger :: struct
 {
     buffer_size: u32,
-    is_playing: bool,
 }
 
 Wav_Data :: struct
@@ -94,7 +92,7 @@ audio_callback :: proc "c" (pDevice: ^ma.device, pOutput, pInput: rawptr, frameC
 
         audio_data.live_commands.read_index = (audio_data.live_commands.read_index + 1) % len(audio_data.live_commands.buffer)
     }
-    
+
 
     // ----------------------------------------------------------------------------------- fill output buffer
     for gain := f32(.1); i in 0..<frameCount
