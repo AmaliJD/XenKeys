@@ -91,6 +91,8 @@ main :: proc() {
 
     // ----------------------------------------------------------------------------------- render loop
     waveform_visual : [256]f32
+    output_visual : [2005]f32
+    output_samples_count := len(output_visual)
     zKeyPressed: bool
     xKeyPressed: bool
     altKeyPressed: bool
@@ -151,30 +153,48 @@ main :: proc() {
 
         // ----------------------------------------------------------------------------------- ui
         imgui.Begin("Log", nil, window_flags.invisible)
-        imgui.Text("Buffer Size: %d", audio_data.logger.buffer_size)
-        imgui.Separator()
-        imgui.Text(fmt.ctprint("Wave 1:", audio_data.wave_data.waveform_1))
-        imgui.Text(fmt.ctprint("Wave 2:", audio_data.wave_data.waveform_2))
-        imgui.Text("warp amt: %.2f", audio_data.wave_data.warp)
+            imgui.Text("Buffer Size: %d", audio_data.logger.buffer_size)
+            imgui.Separator()
+            imgui.Text(fmt.ctprint("Wave 1:", audio_data.wave_data.waveform_1))
+            imgui.Text(fmt.ctprint("Wave 2:", audio_data.wave_data.waveform_2))
+            imgui.Text("warp amt: %.2f", audio_data.wave_data.warp)
         imgui.End()
 
         imgui.Begin("Waveform", nil, window_flags.default)
-        wav.get_wave_values(
-            waveform_visual[:],
-            0,
-            3,
-            audio_data.wave_data.waveform_1,
-            audio_data.wave_data.waveform_2,
-            audio_data.wave_data.warp,
-        )
-        imgui.PlotLines(
-            "##Waveform",
-            &waveform_visual[0],
-            len(waveform_visual),
-            0, nil, -1.1, 1.1,
-            {imgui.GetContentRegionAvail().x, imgui.GetContentRegionAvail().y},
-        )
+            wav.get_wave_values(
+                waveform_visual[:],
+                0,
+                3,
+                audio_data.wave_data.waveform_1,
+                audio_data.wave_data.waveform_2,
+                audio_data.wave_data.warp,
+            )
+            imgui.PlotLines(
+                "##Waveform",
+                &waveform_visual[0],
+                len(waveform_visual),
+                0, nil, -1.1, 1.1,
+                {imgui.GetContentRegionAvail().x, imgui.GetContentRegionAvail().y},
+            )
         imgui.End()
+
+        // imgui.Begin("Output", nil, window_flags.default)
+        //     wav.get_wave_values(
+        //         waveform_visual[:],
+        //         0,
+        //         3,
+        //         audio_data.wave_data.waveform_1,
+        //         audio_data.wave_data.waveform_2,
+        //         audio_data.wave_data.warp,
+        //     )
+        //     imgui.PlotLines(
+        //         "##Waveform",
+        //         &waveform_visual[0],
+        //         len(waveform_visual),
+        //         0, nil, -1.1, 1.1,
+        //         {imgui.GetContentRegionAvail().x, imgui.GetContentRegionAvail().y},
+        //     )
+        // imgui.End()
 
 
         // ----------------------------------------------------------------------------------- rendering
