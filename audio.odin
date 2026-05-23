@@ -19,6 +19,8 @@ Audio_Data :: struct
 
     live_commands: Live_Command_Buffer,
     notes_list: [MAX_NOTES]Note,
+    q_index, w_index, e_index, r_index: u16,
+    q_freq, w_freq, e_freq, r_freq: f64,
 
     wave_data: Wav_Data
 }

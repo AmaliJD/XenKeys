@@ -14,8 +14,8 @@ Keyboard_Data :: struct
 
 key_map : map[i32]Keyboard_Data
 
-KEY_COUNT :: 13
-keys : [KEY_COUNT]i32 =
+EDO :: 12
+keys : [13]i32 =
 {
     glfw.KEY_GRAVE_ACCENT,
     glfw.KEY_1,
@@ -34,12 +34,12 @@ keys : [KEY_COUNT]i32 =
 
 init_key_map :: proc()
 {
-    key_map = make(map[i32]Keyboard_Data, KEY_COUNT)
+    key_map = make(map[i32]Keyboard_Data, len(keys))
 
     start_frequency : f64 = 220.0
     for k, i in keys
     {
-        key_map[k] = Keyboard_Data{ frequency = mathx.freq_add_interval(start_frequency, KEY_COUNT - 1, i, 2) }
+        key_map[k] = Keyboard_Data{ frequency = mathx.freq_add_interval(start_frequency, EDO, i, 2) }
     }
 }
 
@@ -47,10 +47,12 @@ key_callback :: proc "c" (window: glfw.WindowHandle, key, scancode, action, mods
 {
     context = runtime.default_context()
 
+    key_in_keys: bool
     for k in keys
     {
         if key == k
         {
+            key_in_keys = true
             switch action
             {
                 case glfw.PRESS:
@@ -72,6 +74,40 @@ key_callback :: proc "c" (window: glfw.WindowHandle, key, scancode, action, mods
                         add_command_note_off(key_map[k].note_index)
                     }
             }
+        }
+    }
+
+    if !key_in_keys
+    {
+        switch action
+        {
+            case glfw.PRESS:
+                if key == glfw.KEY_Q
+                {
+                    new_index := add_command_note_on(220.0 * audio_data.q_freq)
+                    if new_index != -1 { audio_data.q_index = u16(new_index) }
+                }
+                else if key == glfw.KEY_W
+                {
+                    new_index := add_command_note_on(220.0 * audio_data.w_freq)
+                    if new_index != -1 { audio_data.w_index = u16(new_index) }
+                }
+                else if key == glfw.KEY_E
+                {
+                    new_index := add_command_note_on(220.0 * audio_data.e_freq)
+                    if new_index != -1 { audio_data.e_index = u16(new_index) }
+                }
+                else if key == glfw.KEY_R
+                {
+                    new_index := add_command_note_on(220.0 * audio_data.r_freq)
+                    if new_index != -1 { audio_data.r_index = u16(new_index) }
+                }
+            
+            case glfw.RELEASE:
+                if key == glfw.KEY_Q { add_command_note_off(audio_data.q_index) }
+                else if key == glfw.KEY_W { add_command_note_off(audio_data.w_index) }
+                else if key == glfw.KEY_E { add_command_note_off(audio_data.e_index) }
+                else if key == glfw.KEY_R { add_command_note_off(audio_data.r_index) }
         }
     }
 }

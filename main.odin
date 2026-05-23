@@ -50,6 +50,10 @@ main :: proc() {
 
     // ----------------------------------------------------------------------------------- Audio_Data
     audio_data = new(Audio_Data)
+    audio_data.q_freq = 6.0/5.0
+    audio_data.w_freq = 4.0/3.0
+    audio_data.e_freq = 3.0/2.0
+    audio_data.r_freq = 8.0/5.0
 
 
     // ----------------------------------------------------------------------------------- device config
@@ -95,7 +99,7 @@ main :: proc() {
     output_samples_count := len(output_visual)
     zKeyPressed: bool
     xKeyPressed: bool
-    altKeyPressed: bool
+    spaceKeyPressed: bool
     warp_up: bool
     warp_move:=false
     warp_speed:=f32(.0005)
@@ -121,11 +125,11 @@ main :: proc() {
         }
         xKeyPressed = glfw.GetKey(window, glfw.KEY_X) == glfw.PRESS
 
-        if glfw.GetKey(window, glfw.KEY_LEFT_ALT) == glfw.PRESS && !altKeyPressed
+        if glfw.GetKey(window, glfw.KEY_SPACE) == glfw.PRESS && !spaceKeyPressed
         {
             warp_move = !warp_move
         }
-        altKeyPressed = glfw.GetKey(window, glfw.KEY_LEFT_ALT) == glfw.PRESS
+        spaceKeyPressed = glfw.GetKey(window, glfw.KEY_SPACE) == glfw.PRESS
 
         if warp_move
         {
