@@ -163,7 +163,9 @@ main :: proc() {
             imgui.Text(fmt.ctprint("Wave 1:", audio_data.wave_data.waveform_1))
             imgui.Text(fmt.ctprint("Wave 2:", audio_data.wave_data.waveform_2))
             imgui.Text("warp amt: %.2f", audio_data.wave_data.warp)
-            imgui.Dummy(imgui.Vec2{0, 30})
+            imgui.Dummy(imgui.Vec2{0, 15})
+            imgui.Text("Note Count: %d", audio_data.note_count)
+            imgui.Dummy(imgui.Vec2{0, 15})
             imgui.TextColored(imgui.Vec4{1.0, 0.3, 0.0, 1.0}, "elapsed time: %.3f ms", audio_data.logger.elapsed_time)
         imgui.End()
 

@@ -12,7 +12,7 @@ import wav "waveforms"
 
 
 // ----------------------------------------------------------------------------------- consts
-MAX_NOTES :: 12
+MAX_NOTES :: 64
 
 
 // ----------------------------------------------------------------------------------- structs
@@ -22,6 +22,7 @@ Audio_Data :: struct
 
     live_commands: Live_Command_Buffer,
     notes_list: [MAX_NOTES]Note,
+    note_count: u16,
     q_index, w_index, e_index, r_index: u16,
     q_freq, w_freq, e_freq, r_freq: f64,
 
@@ -134,37 +135,51 @@ audio_callback :: proc "c" (pDevice: ^ma.device, pOutput, pInput: rawptr, frameC
 
 
     // ----------------------------------------------------------------------------------- fill output buffer
-    for gain := f32(.2); i in 0..<frameCount
+    note_count := sync.atomic_load(&audio_data.note_count)
+    if note_count > 0
     {
-        value: f32
-
-        // ----------------------------------------------------------------------------------- read notes
-        for &note in audio_data.notes_list
+        for gain := f32(.2); i in 0..<frameCount
         {
-            switch note.state
+            value: f32
+            notes_processed: u16
+
+            // ----------------------------------------------------------------------------------- read notes
+            for &note in audio_data.notes_list
             {
-                case .On:
-                
-                note_value := wav.get_wave_value(
-                    f32(note.phase),
-                    audio_data.wave_data.waveform_1,
-                    audio_data.wave_data.waveform_2,
-                    audio_data.wave_data.warp,
-                )
+                if notes_processed >= note_count {
+                    break
+                }
 
-                update_note(&note, pDevice.sampleRate)
-                value += note_value
+                switch note.state
+                {
+                    case .On:
+                        notes_processed += 1
 
-                case .Off:
-                    note.state = .Inactive
+                        note_value := wav.get_wave_value(
+                            f32(note.phase),
+                            audio_data.wave_data.waveform_1,
+                            audio_data.wave_data.waveform_2,
+                            audio_data.wave_data.warp,
+                        )
 
-                case .Inactive:
+                        update_note(&note, pDevice.sampleRate)
+                        value += note_value
+
+                    case .Off:
+                        notes_processed += 1
+
+                        note.state = .Inactive
+                        note_count -= 1
+                        sync.atomic_store(&audio_data.note_count, note_count)
+
+                    case .Inactive:
+                }
             }
+            
+            output_value := value * gain
+            output[i * 2]     = output_value
+            output[i * 2 + 1] = output_value
         }
-        
-        output_value := value * gain
-        output[i * 2]     = output_value
-        output[i * 2 + 1] = output_value
     }
 
     logging.get_duration()

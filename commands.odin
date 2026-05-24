@@ -36,8 +36,6 @@ Command_Note_Off :: struct
 }
 
 // ----------------------------------------------------------------------------------- procs
-note_count: u16
-
 @private
 add_command :: proc(command: Command)
 {
@@ -76,7 +74,8 @@ add_command_note_on :: proc(freq: f64) -> i16
         frequency = freq,
     }
 
-    note_count += 1
+    note_count := sync.atomic_load(&audio_data.note_count)
+    sync.atomic_store(&audio_data.note_count, audio_data.note_count + 1)
     add_command(cmd)
 
     return index
@@ -93,5 +92,6 @@ add_command_note_off :: proc(index: u16)
     cmd := Command_Note_Off {
         note_index = index
     }
+
     add_command(cmd)
 }
