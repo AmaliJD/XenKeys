@@ -5,6 +5,7 @@ import "base:runtime"
 import "core:time"
 import "core:math"
 import "core:math/rand"
+import "core:sync"
 import "logging"
 import ma "vendor:miniaudio"
 import wav "waveforms"
@@ -43,10 +44,13 @@ Wav_Data :: struct
 Note :: struct
 {
     state: Note_State,
+
     frequency: f64,
     phase: f64,
     time: f64,
+
     synth: Synth,
+    velocity: f32,
 }
 
 Note_State :: enum u8
@@ -62,6 +66,16 @@ Synth :: struct
     voice_count: u8,
     detune: f32,
     adsr: ADSR,
+}
+
+Hard_Params :: enum // hard set and don't change
+{
+    
+}
+
+Soft_Params :: enum // modulatable
+{
+
 }
 
 ADSR :: struct
@@ -96,9 +110,11 @@ audio_callback :: proc "c" (pDevice: ^ma.device, pOutput, pInput: rawptr, frameC
     audio_data.logger.buffer_size = frameCount
     
     // ----------------------------------------------------------------------------------- read live commands
-    for audio_data.live_commands.read_index != audio_data.live_commands.write_index
+    write_index := sync.atomic_load(&audio_data.live_commands.write_index)
+    read_index := sync.atomic_load(&audio_data.live_commands.read_index)
+    for read_index != write_index
     {
-        command := audio_data.live_commands.buffer[audio_data.live_commands.read_index]
+        command := audio_data.live_commands.buffer[read_index]
 
         switch cmd in command
         {
@@ -111,7 +127,9 @@ audio_callback :: proc "c" (pDevice: ^ma.device, pOutput, pInput: rawptr, frameC
                 audio_data.notes_list[cmd.note_index].state = .Off
         }
 
-        audio_data.live_commands.read_index = (audio_data.live_commands.read_index + 1) % len(audio_data.live_commands.buffer)
+        read_index = (read_index + 1) % len(audio_data.live_commands.buffer)
+        sync.atomic_store(&audio_data.live_commands.read_index, read_index)
+        //audio_data.live_commands.read_index = (audio_data.live_commands.read_index + 1) % len(audio_data.live_commands.buffer)
     }
 
 

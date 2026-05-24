@@ -2,6 +2,7 @@ package main
 
 import "core:fmt"
 import wav "waveforms"
+import "core:sync"
 
 
 // ----------------------------------------------------------------------------------- commands metadata
@@ -40,11 +41,16 @@ note_count: u16
 @private
 add_command :: proc(command: Command)
 {
-    next_write_index := (audio_data.live_commands.write_index + 1) % len(audio_data.live_commands.buffer)
-    if next_write_index != audio_data.live_commands.read_index
+    read_index := sync.atomic_load(&audio_data.live_commands.read_index)
+    write_index := sync.atomic_load(&audio_data.live_commands.write_index)
+
+    // next_write_index := (audio_data.live_commands.write_index + 1) % len(audio_data.live_commands.buffer)
+    next_write_index := (write_index + 1) % len(audio_data.live_commands.buffer)
+    if next_write_index != read_index
     {
-        audio_data.live_commands.buffer[audio_data.live_commands.write_index] = command
-        audio_data.live_commands.write_index = next_write_index
+        audio_data.live_commands.buffer[write_index] = command
+        sync.atomic_store(&audio_data.live_commands.write_index, next_write_index)
+        // audio_data.live_commands.write_index = next_write_index
     }
 }
 
