@@ -2,8 +2,10 @@ package main
 
 import "core:fmt"
 import "base:runtime"
+import "core:time"
 import "core:math"
 import "core:math/rand"
+import "logging"
 import ma "vendor:miniaudio"
 import wav "waveforms"
 
@@ -43,7 +45,7 @@ Note :: struct
     frequency: f64,
     phase: f64,
     time: f64,
-    instrument: int,
+    synth: Synth,
 }
 
 Note_State :: enum u8
@@ -51,6 +53,22 @@ Note_State :: enum u8
     Inactive,
     On,
     Off,
+}
+
+Synth :: struct
+{
+    waveform: wav.Waveform,
+    voice_count: u8,
+    detune: f32,
+    adsr: ADSR,
+}
+
+ADSR :: struct
+{
+    attack: f32,
+    decay: f32,
+    sustain: f32,
+    release: f32,
 }
 
 
@@ -69,13 +87,13 @@ update_note :: proc(note: ^Note, sampleRate: u32)
 audio_callback :: proc "c" (pDevice: ^ma.device, pOutput, pInput: rawptr, frameCount: u32)
 {
     context = runtime.default_context()
+    
+    timer := logging.get_time()
     audio_data := (^Audio_Data)(pDevice.pUserData)
     output := ([^]f32)(pOutput)
 
     audio_data.logger.buffer_size = frameCount
     
-
-
     // ----------------------------------------------------------------------------------- read live commands
     for audio_data.live_commands.read_index != audio_data.live_commands.write_index
     {
@@ -97,7 +115,7 @@ audio_callback :: proc "c" (pDevice: ^ma.device, pOutput, pInput: rawptr, frameC
 
 
     // ----------------------------------------------------------------------------------- fill output buffer
-    for gain := f32(.1); i in 0..<frameCount
+    for gain := f32(.2); i in 0..<frameCount
     {
         value: f32
 
@@ -129,4 +147,6 @@ audio_callback :: proc "c" (pDevice: ^ma.device, pOutput, pInput: rawptr, frameC
         output[i * 2]     = output_value
         output[i * 2 + 1] = output_value
     }
+
+    logging.get_duration(timer)
 }
