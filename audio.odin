@@ -30,6 +30,7 @@ Audio_Data :: struct
 Logger :: struct
 {
     buffer_size: u32,
+    elapsed_time: f64
 }
 
 Wav_Data :: struct
@@ -87,8 +88,8 @@ update_note :: proc(note: ^Note, sampleRate: u32)
 audio_callback :: proc "c" (pDevice: ^ma.device, pOutput, pInput: rawptr, frameCount: u32)
 {
     context = runtime.default_context()
-    
-    timer := logging.get_time()
+
+    logging.get_time()
     audio_data := (^Audio_Data)(pDevice.pUserData)
     output := ([^]f32)(pOutput)
 
@@ -148,5 +149,6 @@ audio_callback :: proc "c" (pDevice: ^ma.device, pOutput, pInput: rawptr, frameC
         output[i * 2 + 1] = output_value
     }
 
-    logging.get_duration(timer)
+    logging.get_duration()
+    audio_data.logger.elapsed_time = logging.elapsed_time
 }

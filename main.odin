@@ -11,6 +11,7 @@ import gl "vendor:OpenGL"
 import ma "vendor:miniaudio"
 
 import wav "waveforms"
+import "logging"
 
 
 audio_data: ^Audio_Data
@@ -103,7 +104,7 @@ main :: proc() {
     warp_up: bool
     warp_move:=false
     warp_speed:=f32(.0005)
-
+    
     for !glfw.WindowShouldClose(window)
     {
         // ----------------------------------------------------------------------------------- input
@@ -162,6 +163,8 @@ main :: proc() {
             imgui.Text(fmt.ctprint("Wave 1:", audio_data.wave_data.waveform_1))
             imgui.Text(fmt.ctprint("Wave 2:", audio_data.wave_data.waveform_2))
             imgui.Text("warp amt: %.2f", audio_data.wave_data.warp)
+            imgui.Dummy(imgui.Vec2{0, 30})
+            imgui.TextColored(imgui.Vec4{1.0, 0.3, 0.0, 1.0}, "elapsed time: %.3f ms", audio_data.logger.elapsed_time)
         imgui.End()
 
         imgui.Begin("Waveform", nil, window_flags.default)
