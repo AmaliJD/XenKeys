@@ -52,9 +52,15 @@ main :: proc() {
     // ----------------------------------------------------------------------------------- Audio_Data
     audio_data = new(Audio_Data)
     audio_data.q_freq = 6.0/5.0
-    audio_data.w_freq = 4.0/3.0
-    audio_data.e_freq = 3.0/2.0
-    audio_data.r_freq = 8.0/5.0
+    audio_data.w_freq = 8.0/5.0
+    audio_data.e_freq = 4.0/3.0
+    audio_data.r_freq = 1.645
+    audio_data.adsr = {
+        attack = .01,
+        decay = .1,
+        sustain = .5,
+        release = 1,
+    }
 
 
     // ----------------------------------------------------------------------------------- device config

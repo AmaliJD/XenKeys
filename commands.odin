@@ -25,9 +25,7 @@ Command_Note_On :: struct
 {
     note_index: u16,
     frequency: f64,
-    waveform_1: wav.Waveform,
-    waveform_2: wav.Waveform,
-    warp: f32,
+    velocity: f32,
 }
 
 Command_Note_Off :: struct
@@ -72,10 +70,11 @@ add_command_note_on :: proc(freq: f64) -> i16
     cmd := Command_Note_On {
         note_index = u16(index),
         frequency = freq,
+        velocity = 1,
     }
 
-    note_count := sync.atomic_load(&audio_data.note_count)
-    sync.atomic_store(&audio_data.note_count, audio_data.note_count + 1)
+    // note_count := sync.atomic_load(&audio_data.note_count)
+    // sync.atomic_store(&audio_data.note_count, audio_data.note_count + 1)
     add_command(cmd)
 
     return index

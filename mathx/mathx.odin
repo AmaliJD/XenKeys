@@ -67,3 +67,15 @@ wrap_01 :: proc(val: f32) -> f32
 {
     return val - math.floor(val)
 }
+
+clamp_01 :: proc(val: f32) -> f32
+{
+    if val > 1 {
+        return 1
+    }
+    else if val < 0 {
+        return 0
+    }
+
+    return val
+}

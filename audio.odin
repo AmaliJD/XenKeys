@@ -4,6 +4,7 @@ import "core:fmt"
 import "base:runtime"
 import "core:time"
 import "core:math"
+import "mathx"
 import "core:math/rand"
 import "core:sync"
 import "logging"
@@ -13,7 +14,7 @@ import wav "waveforms"
 
 // ----------------------------------------------------------------------------------- consts
 MAX_NOTES :: 64
-
+MAX_SYNTHS :: 8
 
 // ----------------------------------------------------------------------------------- structs
 Audio_Data :: struct
@@ -22,11 +23,14 @@ Audio_Data :: struct
 
     live_commands: Live_Command_Buffer,
     notes_list: [MAX_NOTES]Note,
+    synths_list: [MAX_SYNTHS]Synth,
+    // notes_list_bits: u64
     note_count: u16,
     q_index, w_index, e_index, r_index: u16,
     q_freq, w_freq, e_freq, r_freq: f64,
 
-    wave_data: Wav_Data
+    wave_data: Wav_Data,
+    adsr: ADSR,
 }
 
 Logger :: struct
@@ -50,8 +54,9 @@ Note :: struct
     phase: f64,
     time: f64,
 
-    synth: Synth,
+    // synth: Synth,
     velocity: f32,
+    last_envelope_value: f32,
 }
 
 Note_State :: enum u8
@@ -85,6 +90,19 @@ ADSR :: struct
     decay: f32,
     sustain: f32,
     release: f32,
+}
+
+Modulation :: struct
+{
+    final_value: f32,
+    lfo: LFO,
+    delay, fade_in: f32,
+}
+
+LFO :: struct
+{
+    frequency: f32,
+    low, high: f32,
 }
 
 
@@ -123,9 +141,17 @@ audio_callback :: proc "c" (pDevice: ^ma.device, pOutput, pInput: rawptr, frameC
                 audio_data.notes_list[cmd.note_index].state = .On
                 audio_data.notes_list[cmd.note_index].phase = rand.float64()
                 audio_data.notes_list[cmd.note_index].frequency = cmd.frequency
+                audio_data.notes_list[cmd.note_index].velocity = cmd.velocity
+                audio_data.notes_list[cmd.note_index].time = 0
+
+                audio_data.note_count += 1
+                fmt.println(cmd.note_index, ": ", audio_data.notes_list[cmd.note_index])
 
             case Command_Note_Off:
                 audio_data.notes_list[cmd.note_index].state = .Off
+                audio_data.notes_list[cmd.note_index].time = 0
+
+                fmt.println("    ", audio_data.notes_list[cmd.note_index])
         }
 
         read_index = (read_index + 1) % len(audio_data.live_commands.buffer)
@@ -135,32 +161,51 @@ audio_callback :: proc "c" (pDevice: ^ma.device, pOutput, pInput: rawptr, frameC
 
 
     // ----------------------------------------------------------------------------------- fill output buffer
-    note_count := sync.atomic_load(&audio_data.note_count)
-    if note_count > 0
+    if audio_data.note_count > 0
     {
-        for gain := f32(.2); i in 0..<frameCount
+        for gain := f32(.1); i in 0..<frameCount
         {
             value: f32
             notes_processed: u16
+            notes_deactivated := u16(0)
 
             // ----------------------------------------------------------------------------------- read notes
             for &note in audio_data.notes_list
             {
-                if notes_processed >= note_count {
+                if notes_processed >= audio_data.note_count {
                     break
                 }
+
+                note_value := wav.get_wave_value(
+                    f32(note.phase),
+                    audio_data.wave_data.waveform_1,
+                    audio_data.wave_data.waveform_2,
+                    audio_data.wave_data.warp,
+                )
+
+                envelope := f32(1)
 
                 switch note.state
                 {
                     case .On:
                         notes_processed += 1
+                        
+                        if time32 := f32(note.time); time32 <= audio_data.adsr.attack
+                        {
+                            envelope = mathx.inverse_lerp(0, audio_data.adsr.attack, time32) * note.velocity
+                        }
+                        else if time32 < audio_data.adsr.attack + audio_data.adsr.decay
+                        {
+                            t := mathx.inverse_lerp(0, audio_data.adsr.decay, time32 - audio_data.adsr.attack)
+                            envelope = mathx.lerp(note.velocity, note.velocity * audio_data.adsr.sustain, t)
+                        }
+                        else
+                        {
+                            envelope = note.velocity * audio_data.adsr.sustain
+                        }
 
-                        note_value := wav.get_wave_value(
-                            f32(note.phase),
-                            audio_data.wave_data.waveform_1,
-                            audio_data.wave_data.waveform_2,
-                            audio_data.wave_data.warp,
-                        )
+                        note.last_envelope_value = envelope
+                        note_value *= envelope
 
                         update_note(&note, pDevice.sampleRate)
                         value += note_value
@@ -168,15 +213,30 @@ audio_callback :: proc "c" (pDevice: ^ma.device, pOutput, pInput: rawptr, frameC
                     case .Off:
                         notes_processed += 1
 
-                        note.state = .Inactive
-                        note_count -= 1
-                        sync.atomic_store(&audio_data.note_count, note_count)
+                        if time32 := f32(note.time); time32 <= audio_data.adsr.release
+                        {
+                            t := mathx.inverse_lerp(0, audio_data.adsr.release, time32)
+                            envelope = mathx.lerp(note.last_envelope_value, 0, t)
+                            note_value *= envelope
+
+                            update_note(&note, pDevice.sampleRate)
+                            value += note_value
+                        }
+                        else
+                        {
+                            note.state = .Inactive
+                            notes_deactivated += 1
+                            // audio_data.note_count -= 1
+                            // notes_processed -= 1
+                        }
 
                     case .Inactive:
                 }
             }
+
+            audio_data.note_count -= notes_deactivated
             
-            output_value := value * gain
+            output_value     := value * gain
             output[i * 2]     = output_value
             output[i * 2 + 1] = output_value
         }
