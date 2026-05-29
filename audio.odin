@@ -31,6 +31,8 @@ Audio_Data :: struct
 
     wave_data: Wav_Data,
     adsr: ADSR,
+
+    value: f32,
 }
 
 Logger :: struct
@@ -164,7 +166,7 @@ audio_callback :: proc "c" (pDevice: ^ma.device, pOutput, pInput: rawptr, frameC
     // ----------------------------------------------------------------------------------- fill output buffer
     if audio_data.note_count > 0
     {
-        for gain := f32(.1); i in 0..<frameCount
+        for gain := f32(.2); i in 0..<frameCount
         {
             value: f32
             notes_processed: u16
@@ -242,6 +244,8 @@ audio_callback :: proc "c" (pDevice: ^ma.device, pOutput, pInput: rawptr, frameC
             output_value     := value * gain
             output[i * 2]     = output_value
             output[i * 2 + 1] = output_value
+
+            audio_data.value = output_value
         }
     }
 

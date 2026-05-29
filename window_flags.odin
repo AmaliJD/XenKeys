@@ -11,8 +11,15 @@ WINDOW_FLAGS_INVISIBLE :: imgui.WindowFlags {
     .NoMove,
 }
 
+WINDOW_FLAGS_DRAGGABLE :: imgui.WindowFlags {
+    .NoTitleBar,
+    .NoResize,
+    .NoBackground,
+    // .AlwaysAutoResize,
+}
+
 Window_Flags :: struct {
-    default, invisible : imgui.WindowFlags
+    default, invisible, draggable : imgui.WindowFlags
 }
 
 // ----------------------------------------------------------------------------------- procs
@@ -20,7 +27,8 @@ get_window_flags :: proc() -> Window_Flags
 {
     win_flag : Window_Flags = {
         default   = {},
-        invisible = WINDOW_FLAGS_INVISIBLE
+        invisible = WINDOW_FLAGS_INVISIBLE,
+        draggable = WINDOW_FLAGS_DRAGGABLE,
     }
     return win_flag
 }

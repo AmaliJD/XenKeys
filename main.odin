@@ -12,6 +12,8 @@ import ma "vendor:miniaudio"
 
 import wav "waveforms"
 import "logging"
+import "mathx"
+import "core:math"
 
 
 audio_data: ^Audio_Data
@@ -110,6 +112,7 @@ main :: proc() {
     warp_up: bool
     warp_move:=false
     warp_speed:=f32(.0005)
+    last_value := f32(0)
     
     for !glfw.WindowShouldClose(window)
     {
@@ -173,6 +176,24 @@ main :: proc() {
             imgui.Text("Note Count: %d", audio_data.note_count)
             imgui.Dummy(imgui.Vec2{0, 15})
             imgui.TextColored(imgui.Vec4{1.0, 0.3, 0.0, 1.0}, "elapsed time: %.3f ms", audio_data.logger.elapsed_time)
+        imgui.End()
+
+        imgui.Begin("Value", nil, window_flags.draggable)
+            value_01 := mathx.clamp_01(audio_data.value)
+            if value_01 > last_value
+            {
+                last_value = value_01
+            }
+            else
+            {
+                lerp_value := f32(.001)
+                if audio_data.note_count == 0 {
+                    lerp_value = .01
+                }
+                last_value = mathx.lerp(last_value, value_01, lerp_value)
+            }
+            // value_over_1 := mathx.clamp_01(audio_data.value - 1)
+            imgui.ProgressBar(last_value, imgui.Vec2{0, 0}, " ")
         imgui.End()
 
         imgui.Begin("Waveform", nil, window_flags.default)
