@@ -58,10 +58,10 @@ main :: proc() {
     audio_data.e_freq = 4.0/3.0
     audio_data.r_freq = 1.645
     audio_data.adsr = {
-        attack = .01,
+        attack = .1,
         decay = .1,
         sustain = .5,
-        release = .75,
+        release = 1,
     }
 
 
@@ -194,6 +194,60 @@ main :: proc() {
             }
             // value_over_1 := mathx.clamp_01(audio_data.value - 1)
             imgui.ProgressBar(last_value, imgui.Vec2{0, 0}, " ")
+        imgui.End()
+
+        imgui.Begin("Note List", nil, window_flags.default)
+            grid_start := imgui.GetCursorScreenPos()
+            
+            block_size: f32 = 24.0
+            padding:    f32 = 6.0
+            
+            // Fetch the active window draw list
+            draw_list := imgui.GetWindowDrawList()
+
+            // Loop through an 8x8 grid layout
+            for row := 0; row < 8; row += 1 {
+                for col := 0; col < 8; col += 1 {
+                    // Map 2D grid back to your flat 64-element array index
+                    idx := row * 8 + col
+                    if idx >= 64 do break
+                    
+                    // Calculate the exact bounding box pixels for this specific slot
+                    p_min := imgui.Vec2{
+                        grid_start.x + f32(col) * (block_size + padding),
+                        grid_start.y + f32(row) * (block_size + padding),
+                    }
+                    p_max := imgui.Vec2{
+                        p_min.x + block_size,
+                        p_min.y + block_size,
+                    }
+                    
+                    // Assign packed u32 colors directly using Hex Literals (Format: 0x_AA_BB_GG_RR)
+                    color: u32
+                    switch audio_data.notes_list[idx].state {
+                    case .Inactive:
+                        color = 0xFF222222
+                    case .Queued:
+                        color = 0xFF0000FF
+                    case .On:
+                        color = 0xFFFFFFFF
+                    case .Off:
+                        color = 0xCCFF9911
+                    }
+                    
+                    // Draw the filled square rectangle background
+                    imgui.DrawList_AddRectFilled(draw_list, p_min, p_max, color)
+                    
+                    // Optional: Draw a thin subtle border outline around every square 
+                    border_color: u32 = 0xFF444444
+                    imgui.DrawList_AddRect(draw_list, p_min, p_max, border_color)
+                }
+            }
+            
+            // Explicitly calculate and tell ImGui how much layout space our custom drawings took up.
+            // This ensures subsequent ImGui widgets (buttons, text) don't clip over the grid.
+            total_grid_width  := 8 * (block_size + padding)
+            total_grid_height := 8 * (block_size + padding)
         imgui.End()
 
         imgui.Begin("Waveform", nil, window_flags.default)
