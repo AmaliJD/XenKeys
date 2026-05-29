@@ -59,7 +59,7 @@ main :: proc() {
         attack = .01,
         decay = .1,
         sustain = .5,
-        release = 1,
+        release = .75,
     }
 
 

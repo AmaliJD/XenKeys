@@ -62,6 +62,7 @@ Note :: struct
 Note_State :: enum u8
 {
     Inactive,
+    Queued,
     On,
     Off,
 }
@@ -145,13 +146,13 @@ audio_callback :: proc "c" (pDevice: ^ma.device, pOutput, pInput: rawptr, frameC
                 audio_data.notes_list[cmd.note_index].time = 0
 
                 audio_data.note_count += 1
-                fmt.println(cmd.note_index, ": ", audio_data.notes_list[cmd.note_index])
+                fmt.println(cmd.note_index, ": ON")
 
             case Command_Note_Off:
                 audio_data.notes_list[cmd.note_index].state = .Off
                 audio_data.notes_list[cmd.note_index].time = 0
 
-                fmt.println("    ", audio_data.notes_list[cmd.note_index])
+                fmt.println(cmd.note_index, ": OFF")
         }
 
         read_index = (read_index + 1) % len(audio_data.live_commands.buffer)
@@ -170,7 +171,7 @@ audio_callback :: proc "c" (pDevice: ^ma.device, pOutput, pInput: rawptr, frameC
             notes_deactivated := u16(0)
 
             // ----------------------------------------------------------------------------------- read notes
-            for &note in audio_data.notes_list
+            for &note, index in audio_data.notes_list
             {
                 if notes_processed >= audio_data.note_count {
                     break
@@ -231,6 +232,8 @@ audio_callback :: proc "c" (pDevice: ^ma.device, pOutput, pInput: rawptr, frameC
                         }
 
                     case .Inactive:
+
+                    case .Queued:
                 }
             }
 

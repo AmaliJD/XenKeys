@@ -73,6 +73,8 @@ add_command_note_on :: proc(freq: f64) -> i16
         velocity = 1,
     }
 
+    audio_data.notes_list[index].state = .Queued
+
     // note_count := sync.atomic_load(&audio_data.note_count)
     // sync.atomic_store(&audio_data.note_count, audio_data.note_count + 1)
     add_command(cmd)
