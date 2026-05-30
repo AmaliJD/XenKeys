@@ -79,3 +79,25 @@ clamp_01 :: proc(val: f32) -> f32
 
     return val
 }
+
+ramp_up_pow :: proc(val: f32, pow: u8) -> f32
+{
+    t: f32 = 1
+    for i in 0..<pow
+    {
+        t *= val
+    }
+
+    return t
+}
+
+ramp_down_pow :: proc(val: f32, pow: u8) -> f32
+{
+    t: f32 = 1
+    for i in 0..<pow
+    {
+        t *= (1 - val)
+    }
+
+    return 1 - t
+}

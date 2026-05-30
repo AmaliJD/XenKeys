@@ -148,13 +148,13 @@ audio_callback :: proc "c" (pDevice: ^ma.device, pOutput, pInput: rawptr, frameC
                 audio_data.notes_list[cmd.note_index].time = 0
 
                 audio_data.note_count += 1
-                fmt.println(cmd.note_index, ": ON")
+                // fmt.println(cmd.note_index, ": ON")
 
             case Command_Note_Off:
                 audio_data.notes_list[cmd.note_index].state = .Off
                 audio_data.notes_list[cmd.note_index].time = 0
 
-                fmt.println(cmd.note_index, ": OFF")
+                // fmt.println(cmd.note_index, ": OFF")
         }
 
         read_index = (read_index + 1) % len(audio_data.live_commands.buffer)
@@ -195,12 +195,15 @@ audio_callback :: proc "c" (pDevice: ^ma.device, pOutput, pInput: rawptr, frameC
                         
                         if time32 := f32(note.time); time32 <= audio_data.adsr.attack
                         {
-                            envelope = mathx.inverse_lerp(0, audio_data.adsr.attack, time32) * note.velocity
+                            t := mathx.inverse_lerp(0, audio_data.adsr.attack, time32)
+                            _t := mathx.ramp_up_pow(t, 2)
+                            envelope = _t * note.velocity
                         }
                         else if time32 < audio_data.adsr.attack + audio_data.adsr.decay
                         {
                             t := mathx.inverse_lerp(0, audio_data.adsr.decay, time32 - audio_data.adsr.attack)
-                            envelope = mathx.lerp(note.velocity, note.velocity * audio_data.adsr.sustain, t)
+                            _t := mathx.ramp_down_pow(t, 2)
+                            envelope = mathx.lerp(note.velocity, note.velocity * audio_data.adsr.sustain, _t)
                         }
                         else
                         {
@@ -219,7 +222,8 @@ audio_callback :: proc "c" (pDevice: ^ma.device, pOutput, pInput: rawptr, frameC
                         if time32 := f32(note.time); time32 <= audio_data.adsr.release
                         {
                             t := mathx.inverse_lerp(0, audio_data.adsr.release, time32)
-                            envelope = mathx.lerp(note.last_envelope_value, 0, t)
+                            _t := mathx.ramp_down_pow(t, 2)
+                            envelope = mathx.lerp(note.last_envelope_value, 0, _t)
                             note_value *= envelope
 
                             update_note(&note, pDevice.sampleRate)

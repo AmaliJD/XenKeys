@@ -58,8 +58,8 @@ main :: proc() {
     audio_data.e_freq = 4.0/3.0
     audio_data.r_freq = 1.645
     audio_data.adsr = {
-        attack = .1,
-        decay = .1,
+        attack = .01,
+        decay = .2,
         sustain = .5,
         release = 1,
     }
@@ -178,7 +178,7 @@ main :: proc() {
             imgui.TextColored(imgui.Vec4{1.0, 0.3, 0.0, 1.0}, "elapsed time: %.3f ms", audio_data.logger.elapsed_time)
         imgui.End()
 
-        imgui.Begin("Value", nil, window_flags.draggable)
+        imgui.Begin("Volume Output", nil, window_flags.draggable)
             value_01 := mathx.clamp_01(audio_data.value)
             if value_01 > last_value
             {
@@ -197,6 +197,7 @@ main :: proc() {
         imgui.End()
 
         imgui.Begin("Note List", nil, window_flags.default)
+            note_count := u16(0)
             grid_start := imgui.GetCursorScreenPos()
             
             block_size: f32 = 24.0
@@ -227,12 +228,17 @@ main :: proc() {
                     switch audio_data.notes_list[idx].state {
                     case .Inactive:
                         color = 0xFF222222
+                        if note_count < audio_data.note_count {
+                            color = 0x220055FF
+                        }
                     case .Queued:
                         color = 0xFF0000FF
                     case .On:
                         color = 0xFFFFFFFF
+                        note_count += 1
                     case .Off:
                         color = 0xCCFF9911
+                        note_count += 1
                     }
                     
                     // Draw the filled square rectangle background
