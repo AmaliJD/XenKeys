@@ -48,6 +48,32 @@ Wav_Data :: struct
     warp: f32,
 }
 
+Waveform_Type :: union
+{
+    Wave_None,
+    Wav_Raw,
+    Wav_Harmonics,
+    Wav_Sample
+}
+
+Wave_None :: struct {}
+
+Wav_Raw :: struct
+{
+    waveform: wav.Waveform,
+}
+
+Wav_Harmonics :: struct
+{
+    harmonics: [16]f32,
+    amplitudes: [16]f32,
+}
+
+Wav_Sample :: struct
+{
+    sample_index: int
+}
+
 Note :: struct
 {
     state: Note_State,
@@ -71,7 +97,10 @@ Note_State :: enum u8
 
 Synth :: struct
 {
-    waveform: wav.Waveform,
+    waveform_1: Waveform_Type,
+    waveform_2: Waveform_Type,
+    warp: f32,
+    
     voice_count: u8,
     detune: f32,
     adsr: ADSR,
