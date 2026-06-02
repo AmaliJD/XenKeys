@@ -100,7 +100,7 @@ Synth :: struct
     waveform_1: Waveform_Type,
     waveform_2: Waveform_Type,
     warp: f32,
-    
+
     voice_count: u8,
     detune: f32,
     adsr: ADSR,
@@ -154,7 +154,7 @@ audio_callback :: proc "c" (pDevice: ^ma.device, pOutput, pInput: rawptr, frameC
 {
     context = runtime.default_context()
 
-    logging.get_time()
+    logging.start_time()
     audio_data := (^Audio_Data)(pDevice.pUserData)
     output := ([^]f32)(pOutput)
 
@@ -282,6 +282,5 @@ audio_callback :: proc "c" (pDevice: ^ma.device, pOutput, pInput: rawptr, frameC
         }
     }
 
-    logging.get_duration()
-    audio_data.logger.elapsed_time = logging.elapsed_time
+    logging.end_time()
 }
