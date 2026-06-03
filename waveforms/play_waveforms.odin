@@ -8,7 +8,7 @@ import "../logging"
 
 
 
-get_wave_value :: proc(phase: f32, wav_1, wav_2: Waveform, warp: f32 = 0, unscaled: bool = false) -> f32
+get_wave_value :: proc(phase: f32, wav_1, wav_2: Waveform_Type, warp: f32 = 0, unscaled: bool = false) -> f32
 {
     value: f32
 
@@ -116,9 +116,20 @@ get_wave_value :: proc(phase: f32, wav_1, wav_2: Waveform, warp: f32 = 0, unscal
     //         }
     // }
 
-    _proc := Waveform_Raw_Warp_Matrix[wav_1][wav_2]
-    value = _proc.wave_proc(_phase, warp)
-    if !unscaled { scale = mathx.lerp(_proc.start_scale, _proc.end_scale, warp) }
+    #partial switch w1 in wav_1
+    {
+        case Wav_Raw:
+            #partial switch w2 in wav_2
+            {
+                case Wav_Raw:
+                    _proc := Waveform_Raw_Warp_Matrix[w1.waveform][w2.waveform]
+                    value = _proc.wave_proc(_phase, warp)
+                    if !unscaled { scale = mathx.lerp(_proc.start_scale, _proc.end_scale, warp) }
+            }
+    }
+    // _proc := Waveform_Raw_Warp_Matrix[wav_1][wav_2]
+    // value = _proc.wave_proc(_phase, warp)
+    // if !unscaled { scale = mathx.lerp(_proc.start_scale, _proc.end_scale, warp) }
 
     value_quantize : f32 = 32
     _value := value//f32(math.round(value * value_quantize)) / value_quantize
@@ -126,27 +137,27 @@ get_wave_value :: proc(phase: f32, wav_1, wav_2: Waveform, warp: f32 = 0, unscal
     return _value * scale
 }
 
-get_wave_values :: proc(buffer: []f32, phase_start, phase_end: f32, wav_1, wav_2: Waveform, warp: f32)
-{
-    count := len(buffer)
-    step := (phase_end - phase_start) / f32(count - 1)
+// get_wave_values :: proc(buffer: []f32, phase_start, phase_end: f32, wav_1, wav_2: Waveform, warp: f32)
+// {
+//     count := len(buffer)
+//     step := (phase_end - phase_start) / f32(count - 1)
 
-    phase := mathx.wrap_01(phase_start)
-    for i in 0..<count
-    {
-        buffer[i] = f32(get_wave_value(phase, wav_1, wav_2, warp, true))
-        phase += step
+//     phase := mathx.wrap_01(phase_start)
+//     for i in 0..<count
+//     {
+//         buffer[i] = f32(get_wave_value(phase, wav_1, wav_2, warp, true))
+//         phase += step
         
-        if phase >= 1
-        {
-            phase -= 1
-        }
-        else if phase < 0
-        {
-            phase += 1
-        }
-    }
-}
+//         if phase >= 1
+//         {
+//             phase -= 1
+//         }
+//         else if phase < 0
+//         {
+//             phase += 1
+//         }
+//     }
+// }
 
 waveform_pair :: proc(wav_1, wav_2: Waveform) -> int
 {

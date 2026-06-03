@@ -56,6 +56,23 @@ main :: proc() {
 
     // ----------------------------------------------------------------------------------- Audio_Data
     audio_data = new(Audio_Data)
+    audio_data.synths_list[0] =
+    {
+        waveform_1 = Wav_Raw{ waveform = .Sine },
+        waveform_2 = Wav_Raw{ waveform = .Sine },
+        warp = 0,
+
+        adsr = {
+            attack = .01,
+            decay = .2,
+            sustain = .5,
+            release = 1,
+        },
+
+        voice_count = 1,
+        detune = 0,
+
+    }
     audio_data.q_freq = 6.0/5.0
     audio_data.w_freq = 8.0/5.0
     audio_data.e_freq = 4.0/3.0
@@ -261,23 +278,23 @@ main :: proc() {
             total_grid_height := 8 * (block_size + padding)
         imgui.End()
 
-        imgui.Begin("Waveform", nil, window_flags.default)
-            wav.get_wave_values(
-                waveform_visual[:],
-                0,
-                3,
-                audio_data.wave_data.waveform_1,
-                audio_data.wave_data.waveform_2,
-                audio_data.wave_data.warp,
-            )
-            imgui.PlotLines(
-                "##Waveform",
-                &waveform_visual[0],
-                len(waveform_visual),
-                0, nil, -1.1, 1.1,
-                {imgui.GetContentRegionAvail().x, imgui.GetContentRegionAvail().y},
-            )
-        imgui.End()
+        // imgui.Begin("Waveform", nil, window_flags.default)
+        //     wav.get_wave_values(
+        //         waveform_visual[:],
+        //         0,
+        //         3,
+        //         audio_data.wave_data.waveform_1,
+        //         audio_data.wave_data.waveform_2,
+        //         audio_data.wave_data.warp,
+        //     )
+        //     imgui.PlotLines(
+        //         "##Waveform",
+        //         &waveform_visual[0],
+        //         len(waveform_visual),
+        //         0, nil, -1.1, 1.1,
+        //         {imgui.GetContentRegionAvail().x, imgui.GetContentRegionAvail().y},
+        //     )
+        // imgui.End()
 
         // imgui.Begin("Output", nil, window_flags.default)
         //     wav.get_wave_values(

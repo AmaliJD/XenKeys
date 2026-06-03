@@ -48,13 +48,13 @@ Wav_Data :: struct
     warp: f32,
 }
 
-Waveform_Type :: union
-{
-    Wave_None,
-    Wav_Raw,
-    Wav_Harmonics,
-    Wav_Sample
-}
+// Waveform_Type :: union
+// {
+//     Wave_None,
+//     Wav_Raw,
+//     Wav_Harmonics,
+//     Wav_Sample
+// }
 
 Wave_None :: struct {}
 
@@ -77,6 +77,7 @@ Wav_Sample :: struct
 Note :: struct
 {
     state: Note_State,
+    synth_index: u16,
 
     frequency: f64,
     phase: f64,
@@ -97,13 +98,14 @@ Note_State :: enum u8
 
 Synth :: struct
 {
-    waveform_1: Waveform_Type,
-    waveform_2: Waveform_Type,
+    waveform_1: wav.Waveform_Type,
+    waveform_2: wa.vWaveform_Type,
     warp: f32,
+
+    adsr: ADSR,
 
     voice_count: u8,
     detune: f32,
-    adsr: ADSR,
 }
 
 Hard_Params :: enum // hard set and don't change
@@ -208,11 +210,16 @@ audio_callback :: proc "c" (pDevice: ^ma.device, pOutput, pInput: rawptr, frameC
                     break
                 }
 
+                synth := &audio_data.synths_list[note.synth_index]
+
                 note_value := wav.get_wave_value(
                     f32(note.phase),
-                    audio_data.wave_data.waveform_1,
-                    audio_data.wave_data.waveform_2,
-                    audio_data.wave_data.warp,
+                    synth.waveform_1,
+                    synth.waveform_2,
+                    synth.warp,
+                    // audio_data.wave_data.waveform_1,
+                    // audio_data.wave_data.waveform_2,
+                    // audio_data.wave_data.warp,
                 )
 
                 envelope := f32(1)

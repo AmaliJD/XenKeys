@@ -19,6 +19,14 @@ Waveform :: enum
     White,      // random
 }
 
+Waveform_Type :: union
+{
+    Wave_None,
+    Wav_Raw,
+    Wav_Harmonics,
+    Wav_Sample
+}
+
 Waveform_Raw_Warp_Proc :: struct
 {
     wave_proc:      proc(f32, f32) -> f32,
