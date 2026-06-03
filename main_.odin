@@ -15,45 +15,27 @@ import "mathx"
 import "core:math"
 
 
+// ----------------------------------------------------------------------------------- data
 audio_data: ^Audio_Data
 
+window_width  :: 1280
+window_height :: 720
 
-main :: proc() {
-    // ----------------------------------------------------------------------------------- init logging
+window_flags: Window_Flags
+
+
+// ----------------------------------------------------------------------------------- helpers
+init :: proc()
+{
     logging.init_time()
+    init_window_flags()
+    init_key_map()
 
-    // ----------------------------------------------------------------------------------- init glfw
-    if !glfw.Init()
-    {
-        fmt.printfln("Failed to initialize GLFW")
-        return
-    }
-    defer glfw.Terminate()
+    init_audio_data()
+}
 
-    glfw.WindowHint(glfw.CONTEXT_VERSION_MAJOR, 3)
-    glfw.WindowHint(glfw.CONTEXT_VERSION_MINOR, 3)
-    glfw.WindowHint(glfw.OPENGL_PROFILE, glfw.OPENGL_CORE_PROFILE)
-
-
-    // ----------------------------------------------------------------------------------- create window
-    window_width  : i32 = 1280
-    window_height : i32 = 720
-    window := glfw.CreateWindow(window_width, window_height, "XenKeys", nil, nil)
-    if (window == nil)
-    {
-        fmt.printfln("Failed to create window")
-        return
-    }
-    glfw.MakeContextCurrent(window)
-    glfw.SetKeyCallback(window, key_callback)
-
-
-    // ----------------------------------------------------------------------------------- connect window (GLFW) to graphics card (OpenGL)
-    gl.load_up_to(3, 3, glfw.gl_set_proc_address)
-    glfw.SetWindowSizeLimits(window, 320, 180, glfw.DONT_CARE, glfw.DONT_CARE)
-
-
-    // ----------------------------------------------------------------------------------- Audio_Data
+init_audio_data :: proc()
+{
     audio_data = new(Audio_Data)
     audio_data.synths_list[0] =
     {
@@ -70,11 +52,47 @@ main :: proc() {
 
         voice_count = 1,
         detune = 0,
+    }
+}
 
+
+// ----------------------------------------------------------------------------------- main
+main :: proc()
+{
+    init()
+
+
+    // ----------------------------------------------------------------------------------- init glfw
+    if !glfw.Init()
+    {
+        fmt.printfln("Failed to initialize glfw")
+        return
+    }
+    defer glfw.Terminate()
+
+
+    // ----------------------------------------------------------------------------------- create glfw window
+    glfw.WindowHint(glfw.CONTEXT_VERSION_MAJOR, 3)
+    glfw.WindowHint(glfw.CONTEXT_VERSION_MINOR, 3)
+    glfw.WindowHint(glfw.OPENGL_PROFILE, glfw.OPENGL_CORE_PROFILE)
+    
+    window := glfw.CreateWindow(window_width, window_height, "XenKeys", nil, nil)
+    if (window == nil)
+    {
+        fmt.printfln("Failed to create window")
+        return
     }
 
+    glfw.MakeContextCurrent(window)
+    glfw.SetKeyCallback(window, key_callback)
 
-    // ----------------------------------------------------------------------------------- device config
+
+    // ----------------------------------------------------------------------------------- connect window (GLFW) to graphics card (OpenGL)
+    gl.load_up_to(3, 3, glfw.gl_set_proc_address)
+    glfw.SetWindowSizeLimits(window, 320, 180, glfw.DONT_CARE, glfw.DONT_CARE)
+    
+
+    // ----------------------------------------------------------------------------------- miniaudio device config
     device_config := ma.device_config_init(ma.device_type.playback)
     device_config.playback.format   = .f32
     device_config.playback.channels = 2
@@ -84,7 +102,8 @@ main :: proc() {
     device_config.pUserData         = audio_data
 
     device: ma.device
-    if ma.device_init(nil, &device_config, &device) != .SUCCESS {
+    if ma.device_init(nil, &device_config, &device) != .SUCCESS
+    {
         fmt.println("Failed to set up audio device")
         return
     }
@@ -103,13 +122,6 @@ main :: proc() {
         imgui.DestroyContext()
     }
 
-    window_flags := get_window_flags()
-
-
-    // ----------------------------------------------------------------------------------- key input setup
-    init_key_map()
-    defer delete(key_map)
-
 
     // ----------------------------------------------------------------------------------- render loop
     waveform_visual : [256]f32
@@ -125,6 +137,11 @@ main :: proc() {
     
     for !glfw.WindowShouldClose(window)
     {
+        if true
+        {
+            render(window)
+            continue
+        }
         // ----------------------------------------------------------------------------------- input
         glfw.PollEvents()
         

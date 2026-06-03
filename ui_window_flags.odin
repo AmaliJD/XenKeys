@@ -23,12 +23,11 @@ Window_Flags :: struct {
 }
 
 // ----------------------------------------------------------------------------------- procs
-get_window_flags :: proc() -> Window_Flags
+init_window_flags :: proc()
 {
-    win_flag : Window_Flags = {
+    window_flags = {
         default   = {},
         invisible = WINDOW_FLAGS_INVISIBLE,
         draggable = WINDOW_FLAGS_DRAGGABLE,
     }
-    return win_flag
 }
