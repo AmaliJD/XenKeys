@@ -1,7 +1,7 @@
-package waveforms
+package main
 
 import "core:math"
-import "../mathx"
+import "mathx"
 
 
 // ----------------------------------------------------------------------------------- square

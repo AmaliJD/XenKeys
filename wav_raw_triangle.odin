@@ -1,7 +1,7 @@
-package waveforms
+package main
 
 import "core:math"
-import "../mathx"
+import "mathx"
 
 
 // ----------------------------------------------------------------------------------- triangle
@@ -14,6 +14,7 @@ triangle :: proc(phase: f32) -> f32
     }
     return math.abs(_phase * 4 - 2) - 1
 }
+
 
 // ----------------------------------------------------------------------------------- morph to pulse
 triangle_to_pulse :: proc(phase, warp: f32) -> f32
@@ -56,9 +57,11 @@ triangle_to_sine :: proc(phase, warp: f32) -> f32 // lerp
 
 
 // ----------------------------------------------------------------------------------- morph to square
-triangle_to_square :: proc(phase, warp: f32) -> f32
+triangle_to_square :: triangle_to_square_clamp
+
+@private
+triangle_to_square_clamp :: proc(phase, warp: f32) -> f32
 {
-    // return math.lerp(triangle(phase), square(phase), warp)
     if warp == 1
     {
         return square(phase)
@@ -71,10 +74,11 @@ triangle_to_square :: proc(phase, warp: f32) -> f32
     }
 }
 
-// triangle_to_square :: proc(phase, warp: f32) -> f32
-// {
-//     return math.lerp(triangle(phase), square(phase), warp)
-// }
+@private
+triangle_to_square_lerp :: proc(phase, warp: f32) -> f32
+{
+    return math.lerp(triangle(phase), square(phase), warp)
+}
 
 
 // ----------------------------------------------------------------------------------- morph to saw

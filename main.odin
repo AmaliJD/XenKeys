@@ -10,7 +10,6 @@ import "vendor:glfw"
 import gl "vendor:OpenGL"
 import ma "vendor:miniaudio"
 
-import wav "waveforms"
 import "logging"
 import "mathx"
 import "core:math"
@@ -58,8 +57,8 @@ main :: proc() {
     audio_data = new(Audio_Data)
     audio_data.synths_list[0] =
     {
-        waveform_1 = Wav_Raw{ waveform = .Sine },
-        waveform_2 = Wav_Raw{ waveform = .Sine },
+        wt1 = Wav_Raw{ waveform = .Sine },
+        wt2 = Wav_Raw{ waveform = .Sine },
         warp = 0,
 
         adsr = {
@@ -72,16 +71,6 @@ main :: proc() {
         voice_count = 1,
         detune = 0,
 
-    }
-    audio_data.q_freq = 6.0/5.0
-    audio_data.w_freq = 8.0/5.0
-    audio_data.e_freq = 4.0/3.0
-    audio_data.r_freq = 1.645
-    audio_data.adsr = {
-        attack = .01,
-        decay = .2,
-        sustain = .5,
-        release = 1,
     }
 
 
@@ -139,46 +128,46 @@ main :: proc() {
         // ----------------------------------------------------------------------------------- input
         glfw.PollEvents()
         
-        if glfw.GetKey(window, glfw.KEY_Z) == glfw.PRESS && !zKeyPressed
-        {
-            audio_data.wave_data.warp = 0
-            warp_up = false
-            audio_data.wave_data.waveform_1 = wav.Waveform((int(audio_data.wave_data.waveform_1) + 1) % len(wav.Waveform))
-        }
-        zKeyPressed = glfw.GetKey(window, glfw.KEY_Z) == glfw.PRESS
+        // if glfw.GetKey(window, glfw.KEY_Z) == glfw.PRESS && !zKeyPressed
+        // {
+        //     audio_data.wave_data.warp = 0
+        //     warp_up = false
+        //     audio_data.wave_data.waveform_1 = wav.Waveform((int(audio_data.wave_data.waveform_1) + 1) % len(wav.Waveform))
+        // }
+        // zKeyPressed = glfw.GetKey(window, glfw.KEY_Z) == glfw.PRESS
 
-        if glfw.GetKey(window, glfw.KEY_X) == glfw.PRESS && !xKeyPressed
-        {
-            audio_data.wave_data.waveform_2 = wav.Waveform((int(audio_data.wave_data.waveform_2) + 1) % 5)
-            audio_data.wave_data.warp = 0
-            warp_up = false
-        }
-        xKeyPressed = glfw.GetKey(window, glfw.KEY_X) == glfw.PRESS
+        // if glfw.GetKey(window, glfw.KEY_X) == glfw.PRESS && !xKeyPressed
+        // {
+        //     audio_data.wave_data.waveform_2 = wav.Waveform((int(audio_data.wave_data.waveform_2) + 1) % 5)
+        //     audio_data.wave_data.warp = 0
+        //     warp_up = false
+        // }
+        // xKeyPressed = glfw.GetKey(window, glfw.KEY_X) == glfw.PRESS
 
-        if glfw.GetKey(window, glfw.KEY_SPACE) == glfw.PRESS && !spaceKeyPressed
-        {
-            warp_move = !warp_move
-        }
-        spaceKeyPressed = glfw.GetKey(window, glfw.KEY_SPACE) == glfw.PRESS
+        // if glfw.GetKey(window, glfw.KEY_SPACE) == glfw.PRESS && !spaceKeyPressed
+        // {
+        //     warp_move = !warp_move
+        // }
+        // spaceKeyPressed = glfw.GetKey(window, glfw.KEY_SPACE) == glfw.PRESS
 
-        if warp_move
-        {
-            if warp_up { audio_data.wave_data.warp += warp_speed }
-            else { audio_data.wave_data.warp -= warp_speed }
+        // if warp_move
+        // {
+        //     if warp_up { audio_data.wave_data.warp += warp_speed }
+        //     else { audio_data.wave_data.warp -= warp_speed }
 
-            if audio_data.wave_data.warp <= 0 && !warp_up
-            {
-                audio_data.wave_data.warp = 0
-                warp_up = true
-            }
-            else if audio_data.wave_data.warp >= 1 && warp_up
-            {
-                audio_data.wave_data.warp = 1
-                warp_up = false
-            }
-        }
+        //     if audio_data.wave_data.warp <= 0 && !warp_up
+        //     {
+        //         audio_data.wave_data.warp = 0
+        //         warp_up = true
+        //     }
+        //     else if audio_data.wave_data.warp >= 1 && warp_up
+        //     {
+        //         audio_data.wave_data.warp = 1
+        //         warp_up = false
+        //     }
+        // }
 
-        audio_data.logger.elapsed_time = logging.get_time()
+        audio_data.log.elapsed_time = logging.get_time()
 
 
         // ----------------------------------------------------------------------------------- start frame
@@ -189,15 +178,15 @@ main :: proc() {
 
         // ----------------------------------------------------------------------------------- ui
         imgui.Begin("Log", nil, window_flags.invisible)
-            imgui.Text("Buffer Size: %d", audio_data.logger.buffer_size)
+            imgui.Text("Buffer Size: %d", audio_data.log.buffer_size)
             imgui.Separator()
-            imgui.Text(fmt.ctprint("Wave 1:", audio_data.wave_data.waveform_1))
-            imgui.Text(fmt.ctprint("Wave 2:", audio_data.wave_data.waveform_2))
-            imgui.Text("warp amt: %.2f", audio_data.wave_data.warp)
+            // imgui.Text(fmt.ctprint("Wave 1:", audio_data.wave_data.waveform_1))
+            // imgui.Text(fmt.ctprint("Wave 2:", audio_data.wave_data.waveform_2))
+            // imgui.Text("warp amt: %.2f", audio_data.wave_data.warp)
             imgui.Dummy(imgui.Vec2{0, 15})
             imgui.Text("Note Count: %d", audio_data.note_count)
             imgui.Dummy(imgui.Vec2{0, 15})
-            imgui.TextColored(imgui.Vec4{1.0, 0.3, 0.0, 1.0}, "elapsed time: %.3f ms", audio_data.logger.elapsed_time)
+            imgui.TextColored(imgui.Vec4{1.0, 0.3, 0.0, 1.0}, "elapsed time: %.3f ms", audio_data.log.elapsed_time)
         imgui.End()
 
         imgui.Begin("Volume Output", nil, window_flags.draggable)

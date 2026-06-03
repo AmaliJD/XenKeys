@@ -2,6 +2,7 @@ package mathx
 
 import "core:math"
 
+
 // ----------------------------------------------------------------------------------- lerp
 lerp :: proc
 {
@@ -100,4 +101,13 @@ ramp_down_pow :: proc(val: f32, pow: u8) -> f32
     }
 
     return 1 - t
+}
+
+quantize :: proc(val: f32, steps: u8) -> f32
+{
+    if steps == 0 { return val }
+
+    _steps := f32(steps)
+    _val := math.round(val * _steps) / _steps
+    return _val
 }

@@ -2,7 +2,7 @@ package main
 
 import "imgui"
 
-// ----------------------------------------------------------------------------------- consgts & structs
+// ----------------------------------------------------------------------------------- data
 WINDOW_FLAGS_INVISIBLE :: imgui.WindowFlags {
     .NoTitleBar, 
     .NoResize,

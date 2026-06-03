@@ -1,8 +1,8 @@
-package waveforms
+package main
 
 import "core:math"
 import "core:math/rand"
-import "../mathx"
+import "mathx"
 
 
 // ----------------------------------------------------------------------------------- white
@@ -58,7 +58,7 @@ white_to_saw :: proc(phase, warp: f32) -> f32
 }
 
 
-// ----------------------------------------------------------------------------------- morph to mixed
+// ----------------------------------------------------------------------------------- morph to mixed - alternative 2-stage lerp
 white_to_mixed :: proc(phase, warp: f32, wav_proc: proc(f32) -> f32) -> f32
 {
     wav := wav_proc(phase)

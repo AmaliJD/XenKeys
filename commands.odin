@@ -1,7 +1,6 @@
 package main
 
 import "core:fmt"
-import wav "waveforms"
 import "core:sync"
 
 

@@ -1,7 +1,7 @@
-package waveforms
+package main
 
 import "core:math"
-import "../mathx"
+import "mathx"
 
 explicit_harmonics :: proc(harmonics: []f32, volume_limiter: f32, phase: f32) -> f32 {
     val: f32

@@ -1,7 +1,7 @@
-package waveforms
+package main
 
 import "core:math"
-import "../mathx"
+import "mathx"
 
 
 // ----------------------------------------------------------------------------------- sine
@@ -34,6 +34,7 @@ sine_to_pulse :: proc(phase: f32, warp: f32) -> f32
     return sine(_phase)
 }
 
+@private
 sine_to_pulse_phase_mod :: proc(phase, warp: f32) -> f32 // use different function
 {
     k := 1 + 8 * warp
@@ -52,7 +53,10 @@ sine_to_triangle :: proc(phase, warp: f32) -> f32 // lerp
 
 
 // ----------------------------------------------------------------------------------- morph to square
-sine_to_square :: proc(phase, warp: f32) -> f32
+sine_to_square :: sine_to_square_stretch
+
+@private
+sine_to_square_stretch :: proc(phase, warp: f32) -> f32
 {
     _warp := math.pow(warp, .5)
 
@@ -74,6 +78,7 @@ sine_to_square :: proc(phase, warp: f32) -> f32
     return sine(_phase)
 }
 
+@private
 sine_to_square_phase_mod :: proc(phase, warp: f32) -> f32
 {
     p := 1 / (1 - warp)
@@ -81,6 +86,7 @@ sine_to_square_phase_mod :: proc(phase, warp: f32) -> f32
     return .5 + .5 * math.sign(t) * math.pow(math.abs(t), p)
 }
 
+@private
 sine_to_square_clamp :: proc(phase, warp: f32) -> f32
 {
     if (warp < 1)
@@ -127,12 +133,14 @@ sine_to_saw :: proc(phase, warp: f32) -> f32
     }
 }
 
+@private
 sine_between_peaks :: proc(phase, warp: f32) -> f32
 {
     _phase := sine_to_saw_phase_mod(phase, warp)
     return sine(_phase)
 }
 
+@private
 sine_to_saw_phase_mod :: proc(phase, warp: f32) -> f32
 {
     slope_1 := phase
