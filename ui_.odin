@@ -72,10 +72,14 @@ draw_output_buffer :: proc()
         imgui.PushStyleColor(.FrameBg, hex32(&CLEAR))
         imgui.ProgressBar(math.max(audio_data.peak_value - 1, 0), imgui.Vec2{0, 0}, " ")
 
+        imgui.SetCursorPos(cursor_pos)
+        imgui.PushStyleColor(.PlotHistogram, hex32(&WHITE))
+        imgui.ProgressBar(math.max(audio_data.peak_value - 2, 0), imgui.Vec2{0, 0}, " ")
+
         imgui.SameLine()
         imgui.Text("%.2f", audio_data.peak_value)
 
-        imgui.PopStyleColor(3)
+        imgui.PopStyleColor(4)
     imgui.End()
 }
 

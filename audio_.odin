@@ -81,7 +81,7 @@ audio_callback :: proc "c" (pDevice: ^ma.device, pOutput, pInput: rawptr, frameC
     peak_value: f32 = 0
     if audio_data.note_count > 0
     {
-        for gain := f32(.2); i in 0..<frameCount
+        for gain := f32(.1); i in 0..<frameCount
         {
             value: f32
             notes_processed: u16
@@ -170,7 +170,7 @@ audio_callback :: proc "c" (pDevice: ^ma.device, pOutput, pInput: rawptr, frameC
         }
     }
 
-    lerp_amt: f32 = 1 if peak_value == 0 || peak_value >= 1 else .1
+    lerp_amt: f32 = 1 if peak_value == 0 || peak_value > audio_data.peak_value else .1
     audio_data.peak_value = mathx.lerp(audio_data.peak_value, peak_value, lerp_amt)
 
     logging.end_time()
