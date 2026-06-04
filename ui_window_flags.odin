@@ -13,7 +13,7 @@ WINDOW_FLAGS_INVISIBLE :: imgui.WindowFlags {
 
 WINDOW_FLAGS_DRAGGABLE :: imgui.WindowFlags {
     .NoTitleBar,
-    .NoResize,
+    // .NoResize,
     .NoBackground,
     // .AlwaysAutoResize,
 }

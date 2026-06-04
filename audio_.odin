@@ -26,6 +26,7 @@ Audio_Data :: struct
     note_count: u16,
 
     value: f32,
+    peak_value: f32,
 }
 
 Log :: struct
@@ -76,9 +77,10 @@ audio_callback :: proc "c" (pDevice: ^ma.device, pOutput, pInput: rawptr, frameC
 
 
     // ----------------------------------------------------------------------------------- fill output buffer
+    peak_value: f32 = 0
     if audio_data.note_count > 0
     {
-        for gain := f32(.1); i in 0..<frameCount
+        for gain := f32(.2); i in 0..<frameCount
         {
             value: f32
             notes_processed: u16
@@ -163,8 +165,12 @@ audio_callback :: proc "c" (pDevice: ^ma.device, pOutput, pInput: rawptr, frameC
             output[i * 2 + 1] = output_value
 
             audio_data.value = output_value
+            peak_value = math.max(peak_value, math.abs(output_value))
         }
     }
+
+    lerp_amt: f32 = 1 if peak_value == 0 || peak_value >= 1 else .1
+    audio_data.peak_value = mathx.lerp(audio_data.peak_value, peak_value, lerp_amt)
 
     logging.end_time()
 }

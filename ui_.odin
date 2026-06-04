@@ -17,7 +17,7 @@ import "core:math"
 
 ui_data := struct
 {
-
+    
 }{
 
 }
@@ -36,6 +36,7 @@ render :: proc(window: glfw.WindowHandle)
 
     // ----------------------------------------------------------------------------------- ui
     draw_log()
+    draw_output_buffer()
 
 
     // ----------------------------------------------------------------------------------- rendering
@@ -52,7 +53,26 @@ draw_log :: proc()
 {
     imgui.Begin("Log", nil, window_flags.invisible)
         imgui.Text("Note Count: %d", audio_data.note_count)
-        imgui.Spacing()
+        imgui.Dummy(imgui.Vec2{0, 10})
         imgui.TextColored(vec4(&color_1), "elapsed time: %.3f ms", audio_data.log.elapsed_time)
+    imgui.End()
+}
+
+draw_output_buffer :: proc()
+{
+    imgui.Begin("Output Buffer", nil, window_flags.draggable)
+        cursor_pos := imgui.GetCursorPos()
+        imgui.PushStyleColor(.PlotHistogram, hex32(&color_1))
+        imgui.ProgressBar(audio_data.peak_value, imgui.Vec2{0, 0}, " ")
+
+        imgui.SetCursorPos(cursor_pos)
+        imgui.PushStyleColor(.PlotHistogram, hex32(&color_2))
+        imgui.PushStyleColor(.FrameBg, hex32(&_clear))
+        imgui.ProgressBar(math.max(audio_data.peak_value - 1, 0), imgui.Vec2{0, 0}, " ")
+
+        imgui.SameLine()
+        imgui.Text("%.2f", audio_data.peak_value)
+
+        imgui.PopStyleColor(3)
     imgui.End()
 }
