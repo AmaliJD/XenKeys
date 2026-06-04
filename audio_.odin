@@ -62,6 +62,7 @@ audio_callback :: proc "c" (pDevice: ^ma.device, pOutput, pInput: rawptr, frameC
                 audio_data.notes_list[cmd.note_index].frequency = cmd.frequency
                 audio_data.notes_list[cmd.note_index].velocity = cmd.velocity
                 audio_data.notes_list[cmd.note_index].time = 0
+                audio_data.notes_list[cmd.note_index].synth_index = 0
 
                 audio_data.note_count += 1
 

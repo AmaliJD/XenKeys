@@ -39,8 +39,8 @@ init_audio_data :: proc()
     audio_data = new(Audio_Data)
     audio_data.synths_list[0] =
     {
-        wt1 = Wav_Raw{ waveform = .Sine },
-        wt2 = Wav_Raw{ waveform = .Sine },
+        wt1 = Wav_Raw{ waveform = .Square },
+        wt2 = Wav_Raw{ waveform = .Square },
         warp = 0,
 
         adsr = {
