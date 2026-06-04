@@ -27,6 +27,8 @@ Audio_Data :: struct
 
     value: f32,
     peak_value: f32,
+
+    synth_index: u16
 }
 
 Log :: struct

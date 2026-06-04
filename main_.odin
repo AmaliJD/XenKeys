@@ -17,6 +17,7 @@ import "core:math"
 
 // ----------------------------------------------------------------------------------- data
 audio_data: ^Audio_Data
+window: glfw.WindowHandle
 
 window_width  :: 1280
 window_height :: 720
@@ -41,7 +42,7 @@ init_audio_data :: proc()
     {
         wt1 = Wav_Raw{ waveform = .Square },
         wt2 = Wav_Raw{ waveform = .Square },
-        warp = 0,
+        warp = .2,
 
         adsr = {
             attack = .01,
@@ -76,7 +77,7 @@ main :: proc()
     glfw.WindowHint(glfw.CONTEXT_VERSION_MINOR, 3)
     glfw.WindowHint(glfw.OPENGL_PROFILE, glfw.OPENGL_CORE_PROFILE)
     
-    window := glfw.CreateWindow(window_width, window_height, "XenKeys", nil, nil)
+    window = glfw.CreateWindow(window_width, window_height, "XenKeys", nil, nil)
     if (window == nil)
     {
         fmt.printfln("Failed to create window")
@@ -85,7 +86,6 @@ main :: proc()
 
     glfw.MakeContextCurrent(window)
     glfw.SetKeyCallback(window, key_callback)
-
 
     // ----------------------------------------------------------------------------------- connect window (GLFW) to graphics card (OpenGL)
     gl.load_up_to(3, 3, glfw.gl_set_proc_address)
@@ -139,7 +139,7 @@ main :: proc()
     {
         if true
         {
-            render(window)
+            render_ui()
             continue
         }
         // ----------------------------------------------------------------------------------- input

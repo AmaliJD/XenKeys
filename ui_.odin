@@ -17,16 +17,22 @@ import "core:math"
 
 ui_data := struct
 {
-    
+    space_key: Key
 }{
-
+    space_key = { id = glfw.KEY_SPACE }
 }
 
-render :: proc(window: glfw.WindowHandle)
+render_ui :: proc()
 {
     // ----------------------------------------------------------------------------------- input
     glfw.PollEvents()
+    update_keys()
+
     audio_data.log.elapsed_time = logging.get_time()
+    if ui_data.space_key.pressed_this_frame
+    {
+        gray_15.r = .4
+    }
 
 
     // ----------------------------------------------------------------------------------- start frame
@@ -141,5 +147,12 @@ draw_note_list :: proc()
         // This ensures subsequent ImGui widgets (buttons, text) don't clip over the grid.
         // total_grid_width  := 8 * (block_size + padding)
         // total_grid_height := 8 * (block_size + padding)
+    imgui.End()
+}
+
+draw_synth_editor :: proc()
+{
+    imgui.Begin("Synths", nil, window_flags.default)
+
     imgui.End()
 }

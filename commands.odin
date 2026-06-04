@@ -49,7 +49,7 @@ add_command :: proc(command: Command)
     }
 }
 
-add_command_note_on :: proc(freq: f64) -> i16
+add_command_note_on :: proc(freq: f64, synth_index: u16) -> i16
 {
     index : i16 = -1
     for n, i in audio_data.notes_list
@@ -73,6 +73,7 @@ add_command_note_on :: proc(freq: f64) -> i16
     }
 
     audio_data.notes_list[index].state = .Queued
+    audio_data.notes_list[index].synth_index = synth_index
 
     // note_count := sync.atomic_load(&audio_data.note_count)
     // sync.atomic_store(&audio_data.note_count, audio_data.note_count + 1)

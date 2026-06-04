@@ -34,6 +34,13 @@ keys : [13]i32 =
     glfw.KEY_EQUAL,
 }
 
+Key :: bit_field u16
+{
+    pressed:            bool | 1,
+    pressed_this_frame: bool | 1,
+    id:                 i32  | 14,
+}
+
 
 // ----------------------------------------------------------------------------------- helpers
 init_key_map :: proc()
@@ -62,7 +69,7 @@ key_callback :: proc "c" (window: glfw.WindowHandle, key, scancode, action, mods
             switch action
             {
                 case glfw.PRESS:
-                    new_index := add_command_note_on(key_map[k].frequency)
+                    new_index := add_command_note_on(key_map[k].frequency, audio_data.synth_index)
                     if new_index != -1
                     {
                         key_data := &key_map[k]
@@ -116,4 +123,23 @@ key_callback :: proc "c" (window: glfw.WindowHandle, key, scancode, action, mods
     //             else if key == glfw.KEY_R { add_command_note_off(audio_data.r_index) }
     //     }
     // }
+}
+
+update_key :: proc(key: ^Key)
+{
+    if glfw.GetKey(window, key.id) == glfw.PRESS
+    {
+        key.pressed_this_frame = !key.pressed
+        key.pressed = true
+    }
+    else
+    {
+        key.pressed_this_frame = false
+        key.pressed = false
+    }
+}
+
+update_keys :: proc()
+{
+    update_key(&ui_data.space_key)
 }
