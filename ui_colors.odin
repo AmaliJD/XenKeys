@@ -3,6 +3,7 @@ package main
 import "imgui"
 
 Color :: [4]f32
+gray_25 : Color = { 0.25, 0.25, 0.25, 1.0 }
 gray_15 : Color = { 0.15, 0.15, 0.15, 1.0 }
 gray_13 : Color = { 0.13, 0.13, 0.13, 1.0 }
 

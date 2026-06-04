@@ -18,8 +18,13 @@ WINDOW_FLAGS_DRAGGABLE :: imgui.WindowFlags {
     // .AlwaysAutoResize,
 }
 
+WINDOW_FLAGS_LOCKED :: imgui.WindowFlags {
+    .NoResize,
+    .AlwaysAutoResize,
+}
+
 Window_Flags :: struct {
-    default, invisible, draggable : imgui.WindowFlags
+    default, invisible, draggable, locked : imgui.WindowFlags
 }
 
 // ----------------------------------------------------------------------------------- procs
@@ -29,5 +34,6 @@ init_window_flags :: proc()
         default   = {},
         invisible = WINDOW_FLAGS_INVISIBLE,
         draggable = WINDOW_FLAGS_DRAGGABLE,
+        locked = WINDOW_FLAGS_LOCKED,
     }
 }

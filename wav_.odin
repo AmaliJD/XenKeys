@@ -40,11 +40,22 @@ get_wav_value :: proc(wt1, wt2: Waveform_Type, phase: f32, warp: f32 = 0, unscal
 
     #partial switch w1 in wt1
     {
+        case Wav_None:
+            #partial switch w2 in wt2
+            {
+                case Wav_None:
+                    value = 0
+                case Wav_Raw:
+                    value = mathx.lerp(0, get_wav_raw(w2.waveform, phase, unscaled), warp)
+            }
+
         case Wav_Raw:
             #partial switch w2 in wt2
             {
+                case Wav_None:
+                    value = mathx.lerp(get_wav_raw(w1.waveform, phase, unscaled), 0, warp)
                 case Wav_Raw:
-                    value = get_wav_raw(w1.waveform, w2.waveform, _phase, warp, unscaled)
+                    value = get_wav_raw_warp(w1.waveform, w2.waveform, _phase, warp, unscaled)
             }
     }
 

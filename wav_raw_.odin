@@ -68,9 +68,40 @@ Waveform_Raw_Warp_Matrix := [Waveform][Waveform]Waveform_Raw_Warp_Proc {
     },
 }
 
+Wav_Scales := [Waveform]f32 {
+    .Sine = SINE_SCALE,
+    .Triangle = TRIANGLE_SCALE,
+    .Square = SQUARE_SCALE,
+    .Saw = SAW_SCALE,
+    .White = NOISE_SCALE,
+}
+
 
 // ----------------------------------------------------------------------------------- get value
-get_wav_raw :: get_wav_raw_matrix
+get_wav_raw :: proc(wav: Waveform, phase: f32, unscaled: bool) -> f32
+{
+    value: f32
+    scale: f32 = 1
+
+    if !unscaled {scale = Wav_Scales[wav] }
+    switch wav
+    {
+        case .Sine:
+            value = sine(phase)
+        case .Triangle:
+            value = triangle(phase)
+        case .Square:
+            value = square(phase)
+        case .Saw:
+            value = saw(phase)
+        case .White:
+            value = white(phase)
+    }
+
+    return value * scale
+}
+
+get_wav_raw_warp :: get_wav_raw_matrix
 
 @private
 get_wav_raw_matrix :: proc(wav_1, wav_2: Waveform, phase, warp: f32, unscaled: bool) -> f32
