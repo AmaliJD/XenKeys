@@ -29,10 +29,6 @@ render_ui :: proc()
     update_keys()
 
     audio_data.log.elapsed_time = logging.get_time()
-    if ui_data.space_key.pressed_this_frame
-    {
-        gray_15.r = .4
-    }
 
 
     // ----------------------------------------------------------------------------------- start frame

@@ -36,9 +36,10 @@ keys : [13]i32 =
 
 Key :: bit_field u16
 {
-    pressed:            bool | 1,
-    pressed_this_frame: bool | 1,
-    id:                 i32  | 14,
+    pressed:             bool | 1,
+    pressed_this_frame:  bool | 1,
+    released_this_frame: bool | 1,
+    id:                  i32  | 13, // minimum 9
 }
 
 
@@ -130,11 +131,13 @@ update_key :: proc(key: ^Key)
     if glfw.GetKey(window, key.id) == glfw.PRESS
     {
         key.pressed_this_frame = !key.pressed
+        key.released_this_frame = false
         key.pressed = true
     }
     else
     {
         key.pressed_this_frame = false
+        key.released_this_frame = key.pressed
         key.pressed = false
     }
 }
