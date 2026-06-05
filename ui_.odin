@@ -19,9 +19,11 @@ import "core:math"
 
 ui_data := struct
 {
-    space_key: Key
+    space_key: Key,
+
+    waveform_view: [256]f32,
 }{
-    space_key = { id = glfw.KEY_SPACE }
+    space_key = { id = glfw.KEY_SPACE },
 }
 
 render_ui :: proc()
@@ -227,7 +229,7 @@ draw_synth_display :: proc()
         imgui.SliderFloat("##Warp", &synth.warp, 0.0, 1.0, "%.2f")
 
         style := imgui.GetStyle()
-        wt2_button_offset := (grid_width + 35) - imgui.CalcTextSize(button_label_2).x// - (style.FramePadding.x * 2.0)
+        wt2_button_offset := (grid_width + 35) - imgui.CalcTextSize(button_label_2).x
         imgui.SameLine(wt2_button_offset)
         if imgui.Button(button_label_2)
         {
@@ -269,23 +271,25 @@ draw_synth_display :: proc()
         imgui.SliderFloat("##wt1_R", &synth.adsr.release, 0.0, 5.0, "%.2f")
         imgui.PopItemWidth()
 
-        // get_wave_values(
-        //     waveform_visual[:],
-        //     0,
-        //     3,
-        //     audio_data.wave_data.waveform_1,
-        //     audio_data.wave_data.waveform_2,
-        //     audio_data.wave_data.warp,
-        // )
+        imgui.Dummy(imgui.Vec2{0, 30})
 
-        // imgui.Dummy(imgui.Vec2{0, 30})
-        // imgui.PlotLines(
-        //     "##Waveform",
-        //     ui_data.waveform_view[0],
-        //     len(waveform_view),
-        //     0, nil, -1.1, 1.1,
-        //     {imgui.GetContentRegionAvail().x, imgui.GetContentRegionAvail().y},
-        // )
+        write_wav_values_to_buffer(
+            ui_data.waveform_view[:],
+            synth.wt1,
+            synth.wt2,
+            0,
+            3,
+            synth.warp,
+            true,
+        )
+
+        imgui.PlotLines(
+            "##Waveform",
+            &ui_data.waveform_view[0],
+            len(ui_data.waveform_view),
+            0, nil, -1.1, 1.1,
+            {imgui.GetContentRegionAvail().x, 150},
+        )
         
     imgui.End()
 }
