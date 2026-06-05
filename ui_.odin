@@ -268,7 +268,7 @@ draw_synth_display :: proc()
         imgui.Text("R:")
         imgui.SameLine(0, 2)
         imgui.PushItemWidth(90.0)
-        imgui.SliderFloat("##wt1_R", &synth.adsr.release, 0.0, 5.0, "%.2f")
+        imgui.SliderFloat("##wt1_R", &synth.adsr.release, 0.01, 5.0, "%.2f")
         imgui.PopItemWidth()
 
         imgui.Dummy(imgui.Vec2{0, 30})
