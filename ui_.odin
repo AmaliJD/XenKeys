@@ -1,6 +1,8 @@
 package main
 
 import "core:fmt"
+import "core:reflect"
+import "core:strings"
 
 import "imgui"
 import imgui_glfw "imgui/imgui_impl_glfw"
@@ -194,5 +196,72 @@ draw_synth_display :: proc()
         grid_width  := MAX_SYNTHS * (cell_width + padding_x) - padding_x
         grid_height := cell_height + 2 * padding_y
         imgui.Dummy(imgui.Vec2{grid_width, grid_height})
+
+
+        imgui.Dummy(imgui.Vec2{0, 5})
+        synth := &audio_data.synths_list[audio_data.synth_index]
+        button_label_1: cstring = strings.clone_to_cstring(fmt.tprintf("%s##wt1", get_waveform_type_label(synth.wt1)))
+        button_label_2: cstring = strings.clone_to_cstring(fmt.tprintf("%s##wt2", get_waveform_type_label(synth.wt2)))
+
+        if imgui.Button(button_label_1)
+        {
+            #partial switch &w in synth.wt1
+            {
+                case nil:
+                    synth.wt1 = Wav_Raw { waveform = .Sine }
+
+                case Wav_Raw:
+                    next := int(w.waveform) + 1
+                    if next < len(Waveform)
+                    {
+                        w.waveform = Waveform(next)
+                    }
+                    else
+                    {
+                        synth.wt1 = nil
+                    }
+            }
+        }
+
+        imgui.SameLine(0.0, 30.0)
+        imgui.SliderFloat("##Warp", &synth.warp, 0.0, 1.0, "%.2f")
+
+        imgui.SameLine(0.0, 30.0)
+        if imgui.Button(button_label_2)
+        {
+            #partial switch &w in synth.wt2
+            {
+                case nil:
+                    synth.wt2 = Wav_Raw { waveform = .Sine }
+
+                case Wav_Raw:
+                    next := int(w.waveform) + 1
+                    if next < len(Waveform)
+                    {
+                        w.waveform = Waveform(next)
+                    }
+                    else
+                    {
+                        synth.wt2 = nil
+                    }
+            }
+        }
     imgui.End()
+}
+
+get_waveform_type_label :: proc(wt: Waveform_Type) -> string
+{
+    switch w in wt
+    {
+        case nil:
+            return "None"
+
+        case Wav_Raw:
+            return reflect.enum_string(w.waveform)
+
+        case Wav_Harmonics, Wav_Sample, Wav_Sf:
+            return "Undefined"
+    }
+
+    return "Undefined"
 }

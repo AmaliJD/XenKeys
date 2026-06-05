@@ -37,6 +37,14 @@ Log :: struct
     elapsed_time: f64
 }
 
+init_synths_list :: proc()
+{
+    for &s in audio_data.synths_list
+    {
+        s.adsr.sustain = 1
+    }
+}
+
 
 // ----------------------------------------------------------------------------------- audio processing
 audio_callback :: proc "c" (pDevice: ^ma.device, pOutput, pInput: rawptr, frameCount: u32)

@@ -38,6 +38,9 @@ init :: proc()
 init_audio_data :: proc()
 {
     audio_data = new(Audio_Data)
+
+    init_synths_list()
+    
     audio_data.synths_list[0] =
     {
         wt1 = Wav_Raw{ waveform = .Square },
