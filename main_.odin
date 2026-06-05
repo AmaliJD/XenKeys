@@ -147,41 +147,5 @@ main :: proc()
     for !glfw.WindowShouldClose(window)
     {
         render_ui()
-
-        // imgui.Begin("Waveform", nil, window_flags.default)
-        //     wav.get_wave_values(
-        //         waveform_visual[:],
-        //         0,
-        //         3,
-        //         audio_data.wave_data.waveform_1,
-        //         audio_data.wave_data.waveform_2,
-        //         audio_data.wave_data.warp,
-        //     )
-        //     imgui.PlotLines(
-        //         "##Waveform",
-        //         &waveform_visual[0],
-        //         len(waveform_visual),
-        //         0, nil, -1.1, 1.1,
-        //         {imgui.GetContentRegionAvail().x, imgui.GetContentRegionAvail().y},
-        //     )
-        // imgui.End()
-
-        // imgui.Begin("Output", nil, window_flags.default)
-        //     wav.get_wave_values(
-        //         waveform_visual[:],
-        //         0,
-        //         3,
-        //         audio_data.wave_data.waveform_1,
-        //         audio_data.wave_data.waveform_2,
-        //         audio_data.wave_data.warp,
-        //     )
-        //     imgui.PlotLines(
-        //         "##Waveform",
-        //         &waveform_visual[0],
-        //         len(waveform_visual),
-        //         0, nil, -1.1, 1.1,
-        //         {imgui.GetContentRegionAvail().x, imgui.GetContentRegionAvail().y},
-        //     )
-        // imgui.End()
     }
 }
