@@ -198,11 +198,11 @@ draw_synth_display :: proc()
         imgui.Dummy(imgui.Vec2{grid_width, grid_height})
 
 
-        imgui.Dummy(imgui.Vec2{0, 5})
         synth := &audio_data.synths_list[audio_data.synth_index]
         button_label_1: cstring = strings.clone_to_cstring(fmt.tprintf("%s##wt1", get_waveform_type_label(synth.wt1)))
         button_label_2: cstring = strings.clone_to_cstring(fmt.tprintf("%s##wt2", get_waveform_type_label(synth.wt2)))
 
+        imgui.Dummy(imgui.Vec2{0, 5})
         if imgui.Button(button_label_1)
         {
             #partial switch &w in synth.wt1
@@ -223,10 +223,12 @@ draw_synth_display :: proc()
             }
         }
 
-        imgui.SameLine(0.0, 30.0)
+        imgui.SameLine(90)
         imgui.SliderFloat("##Warp", &synth.warp, 0.0, 1.0, "%.2f")
 
-        imgui.SameLine(0.0, 30.0)
+        style := imgui.GetStyle()
+        wt2_button_offset := (grid_width + 35) - imgui.CalcTextSize(button_label_2).x// - (style.FramePadding.x * 2.0)
+        imgui.SameLine(wt2_button_offset)
         if imgui.Button(button_label_2)
         {
             #partial switch &w in synth.wt2
@@ -246,6 +248,45 @@ draw_synth_display :: proc()
                     }
             }
         }
+
+        imgui.PushItemWidth(60.0)
+        imgui.Dummy(imgui.Vec2{0, 10})
+        imgui.Text("A:")
+        imgui.SameLine(0, 2)
+        imgui.SliderFloat("##wt1_A", &synth.adsr.attack, 0.01, 1.0, "%.2f")
+        imgui.SameLine(0, 15)
+        imgui.Text("D:")
+        imgui.SameLine(0, 2)
+        imgui.SliderFloat("##wt1_D", &synth.adsr.decay, 0.01, 1.0, "%.2f")
+        imgui.SameLine(0, 15)
+        imgui.Text("S:")
+        imgui.SameLine(0, 2)
+        imgui.SliderFloat("##wt1_S", &synth.adsr.sustain, 0.0, 1.0, "%.2f")
+        imgui.SameLine(0, 15)
+        imgui.Text("R:")
+        imgui.SameLine(0, 2)
+        imgui.PushItemWidth(90.0)
+        imgui.SliderFloat("##wt1_R", &synth.adsr.release, 0.0, 5.0, "%.2f")
+        imgui.PopItemWidth()
+
+        // get_wave_values(
+        //     waveform_visual[:],
+        //     0,
+        //     3,
+        //     audio_data.wave_data.waveform_1,
+        //     audio_data.wave_data.waveform_2,
+        //     audio_data.wave_data.warp,
+        // )
+
+        // imgui.Dummy(imgui.Vec2{0, 30})
+        // imgui.PlotLines(
+        //     "##Waveform",
+        //     ui_data.waveform_view[0],
+        //     len(waveform_view),
+        //     0, nil, -1.1, 1.1,
+        //     {imgui.GetContentRegionAvail().x, imgui.GetContentRegionAvail().y},
+        // )
+        
     imgui.End()
 }
 
