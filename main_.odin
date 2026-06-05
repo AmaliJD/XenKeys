@@ -54,6 +54,7 @@ init_audio_data :: proc()
         voice_count = 1,
         detune = 0,
     }
+    
     audio_data.synths_list[1] =
     {
         wt1 = Wav_Raw{ waveform = .Sine },

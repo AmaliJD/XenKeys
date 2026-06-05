@@ -33,13 +33,27 @@ inverse_lerp :: proc
 @private
 inverse_lerp_32 :: #force_inline proc(min, max, value: f32) -> f32
 {
-    return (value - min) / (max - min)
+    if max != min
+    {
+        return (value - min) / (max - min)
+    }
+    else
+    {
+        return 1
+    }
 }
 
 @private
 inverse_lerp_64 :: #force_inline proc(min, max, value: f64) -> f64
 {
-    return (value - min) / (max - min)
+    if max != min
+    {
+        return (value - min) / (max - min)
+    }
+    else
+    {
+        return 1
+    }
 }
 
 
