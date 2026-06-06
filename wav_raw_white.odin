@@ -4,11 +4,20 @@ import "core:math"
 import "core:math/rand"
 import "mathx"
 
+@private white_value: f32
+@private white_prev_phase: f32
 
 // ----------------------------------------------------------------------------------- white
 white :: proc(phase: f32) -> f32
 {
-    return rand.float32() * 2 - 1
+    //return rand.float32() * 2 - 1
+    if phase != white_prev_phase
+    {
+        white_value = rand.float32() * 2 - 1
+        white_prev_phase = phase
+    }
+
+    return white_value
 }
 
 

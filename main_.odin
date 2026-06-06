@@ -76,6 +76,23 @@ init_audio_data :: proc()
         voice_count = 1,
         detune = 0,
     }
+
+    audio_data.synths_list[2] =
+    {
+        wt1 = Wav_Raw{ waveform = .White },
+        wt2 = Wav_Raw{ waveform = .White },
+        warp = 0,
+
+        adsr = {
+            attack = 0,
+            decay = 0,
+            sustain = 1,
+            release = 0,
+        },
+
+        voice_count = 1,
+        detune = 0,
+    }
 }
 
 
