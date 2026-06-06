@@ -31,10 +31,10 @@ waveform_pair :: proc(wav_1, wav_2: Waveform) -> int
 
 
 // ----------------------------------------------------------------------------------- get wave
-get_wav_value :: proc(wt1, wt2: Waveform_Type, phase: f32, warp: f32 = 0, unscaled := false) -> f32
+get_wav_value :: proc(wt1, wt2: Waveform_Type, phase, warp: f32, down_sample, bit_crush: i32, unscaled := false) -> f32
 {
     value: f32
-    _phase := mathx.quantize(phase, 0)
+    _phase := mathx.quantize(phase, down_sample)
 
     #partial switch w1 in wt1
     {
@@ -57,12 +57,12 @@ get_wav_value :: proc(wt1, wt2: Waveform_Type, phase: f32, warp: f32 = 0, unscal
             }
     }
 
-    _value := mathx.quantize(value, 0)
+    _value := mathx.quantize_unipolar(value, bit_crush)
 
     return _value
 }
 
-write_wav_values_to_buffer :: proc(buffer: []f32, wt1, wt2: Waveform_Type, phase_start, phase_end: f32, warp: f32 = 0, unscaled := false)
+write_wav_values_to_buffer :: proc(buffer: []f32, wt1, wt2: Waveform_Type, phase_start, phase_end, warp: f32, down_sample, bit_crush: i32, unscaled := false)
 {
     count := len(buffer)
     step := (phase_end - phase_start) / f32(count - 1)
@@ -70,7 +70,7 @@ write_wav_values_to_buffer :: proc(buffer: []f32, wt1, wt2: Waveform_Type, phase
 
     for i in 0..<count
     {
-        buffer[i] = get_wav_value(wt1, wt2, phase, warp, unscaled)
+        buffer[i] = get_wav_value(wt1, wt2, phase, warp, down_sample, bit_crush, unscaled)
         phase += step
         
         if phase >= 1

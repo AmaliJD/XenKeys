@@ -7,6 +7,8 @@ Synth :: struct
     warp: f32,
 
     adsr: ADSR,
+    down_sample: i32,
+    bit_crush: i32,
 
     voice_count: u8,
     detune: f32,

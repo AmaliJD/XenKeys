@@ -117,11 +117,22 @@ ramp_down_pow :: proc(val: f32, pow: u8) -> f32
     return 1 - t
 }
 
-quantize :: proc(val: f32, steps: u8) -> f32
+quantize :: proc(val: f32, steps: i32) -> f32
 {
     if steps == 0 { return val }
 
     _steps := f32(steps)
     _val := math.round(val * _steps) / _steps
+    return _val
+}
+
+quantize_unipolar :: proc(val: f32, steps: i32) -> f32
+{
+    if steps == 0 { return val }
+
+    _steps := f32(steps)
+    val_01 := (val + 1.0) * 0.5
+    quantized_val_01 := math.round(val_01 * _steps) / _steps
+    _val := (quantized_val_01 * 2.0) - 1.0
     return _val
 }

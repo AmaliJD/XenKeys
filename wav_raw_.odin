@@ -15,7 +15,7 @@ SINE_SCALE          :: f32(1)
 TRIANGLE_SCALE      :: f32(.9)
 SQUARE_SCALE        :: f32(0.35)
 SAW_SCALE           :: f32(0.4)
-SINE_PULSE_SCALE    :: f32(0.5)
+SINE_PULSE_SCALE    :: f32(0.7)
 NOISE_SCALE         :: f32(0.4)
 
 PULSE_LOW_LIMIT     :: f32(.005)

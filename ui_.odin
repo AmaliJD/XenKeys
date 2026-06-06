@@ -251,24 +251,34 @@ draw_synth_display :: proc()
             }
         }
 
-        imgui.PushItemWidth(60.0)
+        imgui.PushItemWidth(100.0)
         imgui.Dummy(imgui.Vec2{0, 10})
         imgui.Text("A:")
         imgui.SameLine(0, 2)
-        imgui.SliderFloat("##wt1_A", &synth.adsr.attack, 0.01, 1.0, "%.2f")
+        imgui.SliderFloat("##wt1_A", &synth.adsr.attack, 0.0, 1.0, "%.2f")
         imgui.SameLine(0, 15)
         imgui.Text("D:")
         imgui.SameLine(0, 2)
-        imgui.SliderFloat("##wt1_D", &synth.adsr.decay, 0.01, 1.0, "%.2f")
+        imgui.SliderFloat("##wt1_D", &synth.adsr.decay, 0.0, 1.0, "%.2f")
         imgui.SameLine(0, 15)
         imgui.Text("S:")
         imgui.SameLine(0, 2)
         imgui.SliderFloat("##wt1_S", &synth.adsr.sustain, 0.0, 1.0, "%.2f")
-        imgui.SameLine(0, 15)
+        //imgui.SameLine(0, 15)
         imgui.Text("R:")
         imgui.SameLine(0, 2)
-        imgui.PushItemWidth(90.0)
-        imgui.SliderFloat("##wt1_R", &synth.adsr.release, 0.01, 5.0, "%.2f")
+        imgui.PushItemWidth(200.0)
+        imgui.SliderFloat("##wt1_R", &synth.adsr.release, 0.0, 5.0, "%.2f")
+        
+        imgui.PushItemWidth(290.0)
+        imgui.Dummy(imgui.Vec2{0, 10})
+        imgui.Text("Down Sample:")
+        imgui.SameLine(98)
+        imgui.SliderInt("##DownSample", &synth.down_sample, 0, 32, "%d")
+
+        imgui.Text("Bit Crush:")
+        imgui.SameLine(98)
+        imgui.SliderInt("##BitCrush", &synth.bit_crush, 0, 32, "%d")
         imgui.PopItemWidth()
 
         imgui.Dummy(imgui.Vec2{0, 30})
@@ -280,6 +290,8 @@ draw_synth_display :: proc()
             0,
             3,
             synth.warp,
+            synth.down_sample,
+            synth.bit_crush,
             true,
         )
 
@@ -288,7 +300,7 @@ draw_synth_display :: proc()
             &ui_data.waveform_view[0],
             len(ui_data.waveform_view),
             0, nil, -1.1, 1.1,
-            {imgui.GetContentRegionAvail().x, 150},
+            {imgui.GetContentRegionAvail().x, 180},
         )
         
     imgui.End()
