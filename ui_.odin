@@ -20,10 +20,13 @@ import "core:math"
 ui_data := struct
 {
     space_key: Key,
+    extra_keys: [4]Key,
+    extra_index: [4]i16,
 
     waveform_view: [256]f32,
 }{
     space_key = { id = glfw.KEY_SPACE },
+    extra_keys = {{ id = glfw.KEY_Z }, { id = glfw.KEY_X }, { id = glfw.KEY_C }, { id = glfw.KEY_V }},
 }
 
 render_ui :: proc()
@@ -36,6 +39,11 @@ render_ui :: proc()
     {
         audio_data.synth_index = (audio_data.synth_index + 1) % MAX_SYNTHS
     }
+
+    press_key_note(&(ui_data.extra_keys[0]), &(ui_data.extra_index[0]), 220 * 6/5)
+    press_key_note(&(ui_data.extra_keys[1]), &(ui_data.extra_index[1]), 220 * 7/6)
+    press_key_note(&(ui_data.extra_keys[2]), &(ui_data.extra_index[2]), 220 * 7/5)
+    press_key_note(&(ui_data.extra_keys[3]), &(ui_data.extra_index[3]), 220 * 36/25)
 
     audio_data.log.elapsed_time = logging.get_time()
 

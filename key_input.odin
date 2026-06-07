@@ -145,4 +145,20 @@ update_key :: proc(key: ^Key)
 update_keys :: proc()
 {
     update_key(&ui_data.space_key)
+    for i in 0..<len(ui_data.extra_keys)
+    {
+        update_key(&ui_data.extra_keys[i])
+    }
+}
+
+press_key_note :: proc(key: ^Key, index: ^i16, frequency: f64)
+{
+    if key.pressed_this_frame
+    {
+        index^ = add_command_note_on(frequency, audio_data.synth_index)
+    }
+    else if key.released_this_frame
+    {
+        add_command_note_off(u16(index^))
+    }
 }
