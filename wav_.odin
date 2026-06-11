@@ -1,6 +1,7 @@
 package main
 
 import "mathx"
+import "core:math"
 import "logging"
 
 
@@ -34,7 +35,21 @@ waveform_pair :: proc(wav_1, wav_2: Waveform) -> int
 get_wav_value :: proc(synth: ^Synth, phase: f32, unscaled := false) -> f32
 {
     value: f32
-    _phase := mathx.quantize(phase, synth.down_sample)
+
+    skew: f32 = 5.0
+
+    _phase : = phase
+    if synth.phase_skew < 0
+    {
+        skewed_phase := math.pow_f32(_phase, 1.0/skew)
+        _phase = mathx.lerp(_phase, skewed_phase, math.abs(synth.phase_skew))
+    }
+    else if  synth.phase_skew > 0
+    {
+        skewed_phase := math.pow_f32(_phase, skew)
+        _phase = mathx.lerp(_phase, skewed_phase, synth.phase_skew)
+    }
+    _phase = mathx.quantize(_phase, synth.down_sample)
 
     #partial switch w1 in synth.wt1
     {
@@ -58,6 +73,16 @@ get_wav_value :: proc(synth: ^Synth, phase: f32, unscaled := false) -> f32
     }
 
     _value := mathx.quantize_unipolar(value, synth.bit_crush)
+    if synth.amp_skew > 0
+    {
+        skewed_value := math.sign(_value) * math.pow_f32(math.abs(_value), 1.0/skew)
+        _value = mathx.lerp(_value, skewed_value, synth.amp_skew)
+    }
+    else if  synth.amp_skew < 0
+    {
+        skewed_value := math.sign(_value) * math.pow_f32(math.abs(_value), skew)
+        _value = mathx.lerp(_value, skewed_value, math.abs(synth.amp_skew))
+    }
 
     return _value
 }

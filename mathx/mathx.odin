@@ -64,12 +64,14 @@ remap :: proc
     remap_64,
 }
 
+@private
 remap_32 :: #force_inline proc(value, in_min, in_max, out_min, out_max: f32) -> f32
 {
     t := inverse_lerp(in_min, in_max, value)
     return math.lerp(out_min, out_max, t)
 }
 
+@private
 remap_64 :: #force_inline proc(value, in_min, in_max, out_min, out_max: f64) -> f64
 {
     t := inverse_lerp(in_min, in_max, value)

@@ -9,6 +9,7 @@ Synth :: struct
     adsr: ADSR,
     down_sample: i32,
     bit_crush: i32,
+    phase_skew: f32,
     amp_skew: f32,
 
     voice_count: u8,

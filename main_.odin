@@ -98,6 +98,27 @@ init_audio_data :: proc()
 
     audio_data.synths_list[3] =
     {
+        wt1 = Wav_Raw{ waveform = .Sine },
+        wt2 = Wav_Raw{ waveform = .White },
+        warp = 0.01,
+
+        adsr = {
+            attack = 0.04,
+            decay = 0.1,
+            sustain = 0.8,
+            release = 0.8,
+        },
+
+        bit_crush = 12,
+        phase_skew = 1,
+        amp_skew = -1,
+
+        voice_count = 1,
+        detune = 0,
+    }
+
+    audio_data.synths_list[4] =
+    {
         wt1 = Wav_Raw{ waveform = .White },
         wt2 = Wav_Raw{ waveform = .White },
         warp = 0.8,
