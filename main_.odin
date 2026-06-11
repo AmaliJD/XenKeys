@@ -150,6 +150,9 @@ init_audio_data :: proc()
             release = .3,
         },
 
+        phase_skew = 0.4,
+        amp_skew = 0.8,
+
         voice_count = 1,
         detune = 0,
     }
