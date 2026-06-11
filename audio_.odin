@@ -90,7 +90,7 @@ audio_callback :: proc "c" (pDevice: ^ma.device, pOutput, pInput: rawptr, frameC
     peak_value: f32 = 0
     if audio_data.note_count > 0
     {
-        for gain := f32(.2); i in 0..<frameCount
+        for gain := f32(.1); i in 0..<frameCount
         {
             value: f32
             notes_processed: u16
@@ -106,10 +106,11 @@ audio_callback :: proc "c" (pDevice: ^ma.device, pOutput, pInput: rawptr, frameC
                 synth := &audio_data.synths_list[note.synth_index]
                 adsr := synth.adsr
 
-                note_value := get_wav_value(
+                note_value, note_scale := get_wav_value(
                     synth,
                     f32(note.phase),
                 )
+                note_value *= note_scale
 
                 envelope: f32 = 1
 

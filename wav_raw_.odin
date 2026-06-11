@@ -78,12 +78,10 @@ Wav_Scales := [Waveform]f32 {
 
 
 // ----------------------------------------------------------------------------------- get value
-get_wav_raw :: proc(wav: Waveform, phase: f32, unscaled: bool) -> f32
+get_wav_raw :: proc(wav: Waveform, phase: f32) -> (f32, f32)
 {
     value: f32
-    scale: f32 = 1
 
-    if !unscaled {scale = Wav_Scales[wav] }
     switch wav
     {
         case .Sine:
@@ -98,28 +96,25 @@ get_wav_raw :: proc(wav: Waveform, phase: f32, unscaled: bool) -> f32
             value = white(phase)
     }
 
-    return value * scale
+    scale := Wav_Scales[wav]
+    return value, scale
 }
 
 get_wav_raw_warp :: get_wav_raw_matrix
 
 @private
-get_wav_raw_matrix :: proc(wav_1, wav_2: Waveform, phase, warp: f32, unscaled: bool) -> f32
+get_wav_raw_matrix :: proc(wav_1, wav_2: Waveform, phase, warp: f32) -> (f32, f32)
 {
     _proc := Waveform_Raw_Warp_Matrix[wav_1][wav_2]
     value := _proc.wave_proc(phase, warp)
 
-    scale: f32 = 1
-    if !unscaled
-    {
-        scale = mathx.lerp(_proc.start_scale, _proc.end_scale, warp)
-    }
+    scale := mathx.lerp(_proc.start_scale, _proc.end_scale, warp)
 
-    return value * scale
+    return value, scale
 }
 
 @private
-get_wav_raw_switch :: proc(wav_1, wav_2: Waveform, phase, warp: f32, unscaled: bool) -> f32
+get_wav_raw_switch :: proc(wav_1, wav_2: Waveform, phase, warp: f32) -> (f32, f32)
 {
     value: f32
     scale: f32 = 1
@@ -131,97 +126,97 @@ get_wav_raw_switch :: proc(wav_1, wav_2: Waveform, phase, warp: f32, unscaled: b
             {
                 case .Sine:
                     value = sine_to_pulse(phase, warp)
-                    if !unscaled { scale = mathx.lerp(SINE_SCALE, SINE_PULSE_SCALE, warp) }
+                    scale = mathx.lerp(SINE_SCALE, SINE_PULSE_SCALE, warp)
                 case .Triangle:
                     value = sine_to_triangle(phase, warp)
-                    if !unscaled { scale = mathx.lerp(SINE_SCALE, TRIANGLE_SCALE, warp) }
+                    scale = mathx.lerp(SINE_SCALE, TRIANGLE_SCALE, warp)
                 case .Square:
                     value = sine_to_square(phase, warp)
-                    if !unscaled { scale = mathx.lerp(SINE_SCALE, SQUARE_SCALE, warp) }
+                    scale = mathx.lerp(SINE_SCALE, SQUARE_SCALE, warp)
                 case .Saw:
                     value = sine_to_saw(phase, warp)
-                    if !unscaled { scale = mathx.lerp(SINE_SCALE, SAW_SCALE, warp) }
+                    scale = mathx.lerp(SINE_SCALE, SAW_SCALE, warp)
                 case .White:
                     value = sine_to_white(phase, warp)
-                    if !unscaled { scale = mathx.lerp(SINE_SCALE, NOISE_SCALE, warp) }
+                    scale = mathx.lerp(SINE_SCALE, NOISE_SCALE, warp)
             }
         case .Triangle:
             switch wav_2
             {
                 case .Sine:
                     value = triangle_to_sine(phase, warp)
-                    if !unscaled { scale = mathx.lerp(TRIANGLE_SCALE, SINE_SCALE, warp) }
+                    scale = mathx.lerp(TRIANGLE_SCALE, SINE_SCALE, warp)
                 case .Triangle:
                     value = triangle_to_pulse(phase, warp)
-                    if !unscaled { scale = mathx.lerp(TRIANGLE_SCALE, TRIANGLE_SCALE, warp) }
+                    scale = mathx.lerp(TRIANGLE_SCALE, TRIANGLE_SCALE, warp)
                 case .Square:
                     value = triangle_to_square(phase, warp)
-                    if !unscaled { scale = mathx.lerp(TRIANGLE_SCALE, SQUARE_SCALE, warp) }
+                    scale = mathx.lerp(TRIANGLE_SCALE, SQUARE_SCALE, warp)
                 case .Saw:
                     value = triangle_to_saw(phase, warp)
-                    if !unscaled { scale = mathx.lerp(TRIANGLE_SCALE, SAW_SCALE, warp) }
+                    scale = mathx.lerp(TRIANGLE_SCALE, SAW_SCALE, warp)
                 case .White:
                     value = triangle_to_white(phase, warp)
-                    if !unscaled { scale = mathx.lerp(TRIANGLE_SCALE, NOISE_SCALE, warp) }
+                    scale = mathx.lerp(TRIANGLE_SCALE, NOISE_SCALE, warp)
             }
         case .Square:
             switch wav_2
             {
                 case .Sine:
                     value = square_to_sine(phase, warp)
-                    if !unscaled { scale = mathx.lerp(SQUARE_SCALE, SINE_PULSE_SCALE, warp) }
+                    scale = mathx.lerp(SQUARE_SCALE, SINE_PULSE_SCALE, warp)
                 case .Triangle:
                     value = square_to_triangle(phase, warp)
-                    if !unscaled { scale = mathx.lerp(SQUARE_SCALE, TRIANGLE_SCALE, warp) }
+                    scale = mathx.lerp(SQUARE_SCALE, TRIANGLE_SCALE, warp)
                 case .Square:
                     value = square_to_pulse(phase, warp)
-                    if !unscaled { scale = mathx.lerp(SQUARE_SCALE, SQUARE_SCALE, warp) }
+                    scale = mathx.lerp(SQUARE_SCALE, SQUARE_SCALE, warp)
                 case .Saw:
                     value = square_to_saw(phase, warp)
-                    if !unscaled { scale = mathx.lerp(SQUARE_SCALE, SAW_SCALE, warp) }
+                    scale = mathx.lerp(SQUARE_SCALE, SAW_SCALE, warp)
                 case .White:
                     value = square_to_white(phase, warp)
-                    if !unscaled { scale = mathx.lerp(SQUARE_SCALE, NOISE_SCALE, warp) }
+                    scale = mathx.lerp(SQUARE_SCALE, NOISE_SCALE, warp)
             }
         case .Saw:
             switch wav_2
             {
                 case .Sine:
                     value = saw_to_sine(phase, warp)
-                    if !unscaled { scale = mathx.lerp(SAW_SCALE, SINE_PULSE_SCALE, warp) }
+                    scale = mathx.lerp(SAW_SCALE, SINE_PULSE_SCALE, warp)
                 case .Triangle:
                     value = saw_to_triangle(phase, warp)
-                    if !unscaled { scale = mathx.lerp(SAW_SCALE, TRIANGLE_SCALE, warp) }
+                    scale = mathx.lerp(SAW_SCALE, TRIANGLE_SCALE, warp)
                 case .Square:
                     value = saw_to_square(phase, warp)
-                    if !unscaled { scale = mathx.lerp(SAW_SCALE, SQUARE_SCALE, warp) }
+                    scale = mathx.lerp(SAW_SCALE, SQUARE_SCALE, warp)
                 case .Saw:
                     value = saw_to_pulse(phase, warp)
-                    if !unscaled { scale = mathx.lerp(SAW_SCALE, SAW_SCALE, warp) }
+                    scale = mathx.lerp(SAW_SCALE, SAW_SCALE, warp)
                 case .White:
                     value = saw_to_white(phase, warp)
-                    if !unscaled { scale = mathx.lerp(SAW_SCALE, NOISE_SCALE, warp) }
+                    scale = mathx.lerp(SAW_SCALE, NOISE_SCALE, warp)
             }
         case .White:
             switch wav_2
             {
                 case .Sine:
                     value = white_to_sine(phase, warp)
-                    if !unscaled { scale = mathx.lerp(NOISE_SCALE, SINE_PULSE_SCALE, warp) }
+                    scale = mathx.lerp(NOISE_SCALE, SINE_PULSE_SCALE, warp)
                 case .Triangle:
                     value = white_to_triangle(phase, warp)
-                    if !unscaled { scale = mathx.lerp(NOISE_SCALE, TRIANGLE_SCALE, warp) }
+                    scale = mathx.lerp(NOISE_SCALE, TRIANGLE_SCALE, warp)
                 case .Square:
                     value = white_to_square(phase, warp)
-                    if !unscaled { scale = mathx.lerp(NOISE_SCALE, SQUARE_SCALE, warp) }
+                    scale = mathx.lerp(NOISE_SCALE, SQUARE_SCALE, warp)
                 case .Saw:
                     value = white_to_saw(phase, warp)
-                    if !unscaled { scale = mathx.lerp(NOISE_SCALE, SAW_SCALE, warp) }
+                    scale = mathx.lerp(NOISE_SCALE, SAW_SCALE, warp)
                 case .White:
                     value = white_to_pulse(phase, warp)
-                    if !unscaled { scale = mathx.lerp(NOISE_SCALE, NOISE_SCALE, warp) }
+                    scale = mathx.lerp(NOISE_SCALE, NOISE_SCALE, warp)
             }
     }
 
-    return value * scale
+    return value, scale
 }
