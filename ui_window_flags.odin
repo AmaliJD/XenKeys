@@ -21,6 +21,7 @@ WINDOW_FLAGS_DRAGGABLE :: imgui.WindowFlags {
 WINDOW_FLAGS_LOCKED :: imgui.WindowFlags {
     .NoResize,
     .AlwaysAutoResize,
+    .NoMove,
 }
 
 Window_Flags :: struct {

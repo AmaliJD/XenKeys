@@ -210,6 +210,11 @@ draw_synth_display :: proc()
 
             imgui.DrawList_AddRectFilled(draw_list, cell_tl, cell_br, color)
             imgui.DrawList_AddRect(draw_list, cell_tl, cell_br, hex32(&gray_25))
+
+            if imgui.IsMouseHoveringRect(cell_tl, cell_br) && imgui.IsMouseClicked(.Left)
+            {
+                audio_data.synth_index = i
+            }
         }
 
         grid_width  := MAX_SYNTHS * (cell_width + padding_x) - padding_x
