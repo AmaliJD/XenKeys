@@ -107,12 +107,8 @@ audio_callback :: proc "c" (pDevice: ^ma.device, pOutput, pInput: rawptr, frameC
                 adsr := synth.adsr
 
                 note_value := get_wav_value(
-                    synth.wt1,
-                    synth.wt2,
+                    synth,
                     f32(note.phase),
-                    synth.warp,
-                    synth.down_sample,
-                    synth.bit_crush,
                 )
 
                 envelope: f32 = 1

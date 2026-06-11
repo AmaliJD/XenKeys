@@ -44,8 +44,27 @@ init_audio_data :: proc()
     audio_data.synths_list[0] =
     {
         wt1 = Wav_Raw{ waveform = .Square },
-        wt2 = Wav_Raw{ waveform = .Square },
+        wt2 = Wav_Raw{ waveform = .Triangle },
         warp = .2,
+
+        adsr = {
+            attack = .01,
+            decay = .2,
+            sustain = .5,
+            release = 1,
+        },
+
+        down_sample = 3,
+
+        voice_count = 1,
+        detune = 0,
+    }
+
+    audio_data.synths_list[1] =
+    {
+        wt1 = Wav_Raw{ waveform = .Square },
+        wt2 = Wav_Raw{ waveform = .Sine },
+        warp = .6,
 
         adsr = {
             attack = .01,
@@ -58,7 +77,7 @@ init_audio_data :: proc()
         detune = 0,
     }
     
-    audio_data.synths_list[1] =
+    audio_data.synths_list[2] =
     {
         wt1 = Wav_Raw{ waveform = .Sine },
         wt2 = Wav_Raw{ waveform = .Square },
@@ -77,18 +96,20 @@ init_audio_data :: proc()
         detune = 0,
     }
 
-    audio_data.synths_list[2] =
+    audio_data.synths_list[3] =
     {
         wt1 = Wav_Raw{ waveform = .White },
         wt2 = Wav_Raw{ waveform = .White },
-        warp = 0,
+        warp = 0.8,
 
         adsr = {
-            attack = 0,
+            attack = 0.2,
             decay = 0,
-            sustain = 1,
-            release = 0,
+            sustain = 0.1,
+            release = 1.3,
         },
+
+        bit_crush = 1,
 
         voice_count = 1,
         detune = 0,
