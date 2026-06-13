@@ -1,0 +1,15 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "build_odin_debug",
+            "type": "shell",
+            "command": "odin build . -o:speed -extra-linker-flags:\"/LIBPATH:./imgui\"",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": []
+        }
+    ]
+}

@@ -38,7 +38,7 @@ get_wav_value :: proc(synth: ^Synth, phase: f32) -> (f32, f32)
 
     skew: f32 = 5.0
 
-    _phase : = phase
+    _phase := phase
     if synth.phase_skew < 0
     {
         skewed_phase := math.pow_f32(_phase, 1.0/skew)
