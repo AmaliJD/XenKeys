@@ -48,10 +48,11 @@ init_key_map :: proc()
 {
     key_map = make(map[i32]Keyboard_Data, len(keys))
 
+    log_scale := mathx.get_interval_log_scale(2, EDO)
     start_frequency : f64 = 220.0
     for k, i in keys
     {
-        key_map[k] = Keyboard_Data{ frequency = mathx.freq_add_interval(start_frequency, EDO, i, 2) }
+        key_map[k] = Keyboard_Data{ frequency = mathx.add_intervals(start_frequency, f64(i), log_scale) }
     }
 }
 
