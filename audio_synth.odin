@@ -1,5 +1,7 @@
 package main
 
+import "core:math"
+
 Synth :: struct
 {
     wt1: Waveform_Type,
@@ -14,6 +16,9 @@ Synth :: struct
 
     voice_count: u8,
     detune: f32,
+
+    vibrato: f32,
+    vibrato_hz: f32,
 }
 
 ADSR :: struct

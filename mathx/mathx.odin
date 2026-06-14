@@ -1,6 +1,7 @@
 package mathx
 
 import "core:math"
+import "core:math/rand"
 
 
 // ----------------------------------------------------------------------------------- lerp
@@ -137,4 +138,22 @@ quantize_unipolar :: proc(val: f32, steps: i32) -> f32
     quantized_val_01 := math.round(val_01 * _steps) / _steps
     _val := (quantized_val_01 * 2.0) - 1.0
     return _val
+}
+
+rand_float32_magnitude_1 :: proc() -> f32
+{
+    return rand.float32() * 2 - 1
+}
+
+cubic_lerp :: proc(p0, p1, p2, p3, t: f32) -> f32
+{
+    t2 := t * t
+    t3 := t2 * t
+
+    c0 := -0.5 * p0 + 1.5 * p1 - 1.5 * p2 + 0.5 * p3
+    c1 := p0 - 2.5 * p1 + 2.0 * p2 - 0.5 * p3
+    c2 := -0.5 * p0 + 0.5 * p2
+    c3 := p1
+
+    return (c0 * t3) + (c1 * t2) + (c2 * t) + c3
 }

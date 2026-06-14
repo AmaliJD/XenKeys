@@ -310,6 +310,17 @@ draw_synth_display :: proc()
         imgui.Text("Amp Skew:")
         imgui.SameLine(98)
         imgui.SliderFloat("##AmpSkew", &synth.amp_skew, -1, 1, "%.2f")
+
+        imgui.Dummy(imgui.Vec2{0, 10})
+        imgui.PushItemWidth(240.0)
+        imgui.Text("Vibrato Strength:")
+        imgui.SameLine(135)
+        imgui.SliderFloat("##Vibrato Strength", &synth.vibrato, 0, 100, "%.2f")
+
+        imgui.Text("Vibrato Hz:")
+        imgui.SameLine(135)
+        imgui.SliderFloat("##Vibrato Hz", &synth.vibrato_hz, 0, 20, "%.2f")
+
         imgui.PopItemWidth()
 
         imgui.Dummy(imgui.Vec2{0, 30})
@@ -343,7 +354,7 @@ get_waveform_type_label :: proc(wt: Waveform_Type) -> string
         case Wav_Raw:
             return reflect.enum_string(w.waveform)
 
-        case Wav_Harmonics, Wav_Sample, Wav_Sf:
+        case Wav_Harmonics, Wav_Sample, Wav_Sf, Wav_Test:
             return "Undefined"
     }
 

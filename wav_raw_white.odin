@@ -13,7 +13,7 @@ white :: proc(phase: f32) -> f32
     //return rand.float32() * 2 - 1
     if phase != white_phase
     {
-        white_value = rand.float32() * 2 - 1
+        white_value = mathx.rand_float32_magnitude_1()
         white_phase = phase
     }
 

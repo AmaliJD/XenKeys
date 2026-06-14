@@ -55,6 +55,8 @@ init_audio_data :: proc()
         },
 
         down_sample = 3,
+        vibrato = 5,
+        vibrato_hz = 4,
 
         voice_count = 1,
         detune = 0,
@@ -152,6 +154,23 @@ init_audio_data :: proc()
 
         phase_skew = 0.4,
         amp_skew = 0.8,
+
+        voice_count = 1,
+        detune = 0,
+    }
+
+    audio_data.synths_list[6] =
+    {
+        wt1 = Wav_Test{ },
+        wt2 = Wav_Test{ },
+        warp = 0,
+
+        adsr = {
+            attack = 0,
+            decay = 0,
+            sustain = 1,
+            release = 0,
+        },
 
         voice_count = 1,
         detune = 0,

@@ -21,6 +21,7 @@ Waveform_Type :: union
     Wav_Harmonics,
     Wav_Sample,
     Wav_Sf,
+    Wav_Test,
 }
 
 
@@ -55,24 +56,42 @@ get_wav_value :: proc(synth: ^Synth, phase: f32) -> (f32, f32)
     #partial switch w1 in synth.wt1
     {
         case nil:
-            #partial switch w2 in synth.wt2
-            {
-                case nil:
-                    value = 0
-                case Wav_Raw:
-                    value, scale = get_wav_raw(w2.waveform, _phase)
-                    value = mathx.lerp(0, value, synth.warp)
-            }
+        #partial switch w2 in synth.wt2
+        {
+            case nil:
+                value = 0
+            case Wav_Raw:
+                value, scale = get_wav_raw(w2.waveform, _phase)
+                value = mathx.lerp(0, value, synth.warp)
+        }
 
         case Wav_Raw:
+        #partial switch w2 in synth.wt2
+        {
+            case nil:
+                value, scale = get_wav_raw(w1.waveform, _phase)
+                value = mathx.lerp(value, 0, synth.warp)
+            case Wav_Raw:
+                value, scale = get_wav_raw_warp(w1.waveform, w2.waveform, _phase, synth.warp)
+        }
+
+        case Wav_Test:
+        if synth.warp == 0
+        {
+            value = get_wav_test()
+        }
+        else
+        {
+            value_test := get_wav_test()
             #partial switch w2 in synth.wt2
             {
                 case nil:
-                    value, scale = get_wav_raw(w1.waveform, _phase)
-                    value = mathx.lerp(value, 0, synth.warp)
+                    value = mathx.lerp(value_test, 0, synth.warp)
                 case Wav_Raw:
-                    value, scale = get_wav_raw_warp(w1.waveform, w2.waveform, _phase, synth.warp)
+                    value_raw, scale_raw := get_wav_raw(w2.waveform, _phase)
+                    value = mathx.lerp(value_test, value_raw, synth.warp)
             }
+        }
     }
 
     _value := mathx.quantize_unipolar(value, synth.bit_crush)
