@@ -17,8 +17,8 @@ Synth :: struct
     voice_count: u8,
     detune: f32,
 
-    vibrato: f32,
-    vibrato_hz: f32,
+    drift: f32,
+    drift_frequency: f32,
 }
 
 ADSR :: struct

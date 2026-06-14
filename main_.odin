@@ -55,8 +55,8 @@ init_audio_data :: proc()
         },
 
         down_sample = 3,
-        vibrato = 5,
-        vibrato_hz = 4,
+        drift = 1.5,
+        drift_frequency = 4,
 
         voice_count = 1,
         detune = 0,

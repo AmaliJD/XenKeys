@@ -313,13 +313,13 @@ draw_synth_display :: proc()
 
         imgui.Dummy(imgui.Vec2{0, 10})
         imgui.PushItemWidth(240.0)
-        imgui.Text("Vibrato Strength:")
+        imgui.Text("Drift Strength:")
         imgui.SameLine(135)
-        imgui.SliderFloat("##Vibrato Strength", &synth.vibrato, 0, 100, "%.2f")
+        imgui.SliderFloat("##Drift Strength", &synth.drift, 0, 30, "%.2f")
 
-        imgui.Text("Vibrato Hz:")
+        imgui.Text("Drift Hz:")
         imgui.SameLine(135)
-        imgui.SliderFloat("##Vibrato Hz", &synth.vibrato_hz, 0, 20, "%.2f")
+        imgui.SliderFloat("##Drift Hz", &synth.drift_frequency, 0, 20, "%.2f")
 
         imgui.PopItemWidth()
 
