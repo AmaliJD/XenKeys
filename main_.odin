@@ -54,12 +54,11 @@ init_audio_data :: proc()
             release = 1,
         },
 
+        voice_count = 1,
+
         down_sample = 3,
         drift = 1.5,
         drift_frequency = 4,
-
-        voice_count = 1,
-        detune = 0,
     }
 
     audio_data.synths_list[1] =
@@ -161,19 +160,19 @@ init_audio_data :: proc()
 
     audio_data.synths_list[6] =
     {
-        wt1 = Wav_Test{ },
-        wt2 = Wav_Test{ },
+        wt1 = Wav_Raw{ waveform = .Saw },
+        wt2 = Wav_Raw{ waveform = .Saw },
         warp = 0,
 
         adsr = {
-            attack = 0,
-            decay = 0,
+            attack = .02,
+            decay = .2,
             sustain = 1,
-            release = 0,
+            release = 1,
         },
 
-        voice_count = 1,
-        detune = 0,
+        voice_count = 4,
+        detune = 3,
     }
 
     audio_data.synths_list[7] =

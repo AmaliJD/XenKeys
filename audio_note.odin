@@ -8,7 +8,7 @@ Note :: struct
     synth_index: u16,
 
     frequency: f64,
-    phase: f64,
+    phase: [8]f64,
     time: f64,
 
     velocity: f32,
@@ -31,7 +31,9 @@ update_note :: proc(note: ^Note, sample_rate: u32)
     synth := &audio_data.synths_list[note.synth_index]
     frequency := note.frequency
 
-    // vibrato
+    if synth.voice_count == 0 { return }
+
+    // pitch drift
     if (synth.drift != 0 && synth.drift_frequency > 0)
     {
         if (note.drift_sample_counter == 0)
@@ -57,8 +59,23 @@ update_note :: proc(note: ^Note, sample_rate: u32)
     }
 
     // phase
-    note.phase += frequency / f64(sample_rate)
-    if note.phase >= 1 do note.phase -= 1
+    if synth.voice_count == 1
+    {
+        note.phase[0] += frequency / f64(sample_rate)
+        if note.phase[0] >= 1 do note.phase[0] -= 1
+    }
+    else
+    {
+        detuned_frequency: f64
+        for i in 0..<synth.voice_count
+        {
+            //detune_step := (synth.detune * 2) / synth.voice_count - 1
+            detuned_frequency = mathx.add_degrees(frequency, f64(mathx.lerp(-synth.detune, synth.detune, f32(i) / f32(synth.voice_count))))
+
+            note.phase[i] += detuned_frequency / f64(sample_rate)
+            if note.phase[i] >= 1 do note.phase[i] -= 1
+        }
+    }
 
     // time
     dt := 1.0 / f64(sample_rate)

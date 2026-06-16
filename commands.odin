@@ -39,13 +39,11 @@ add_command :: proc(command: Command)
     read_index := sync.atomic_load(&audio_data.live_commands.read_index)
     write_index := sync.atomic_load(&audio_data.live_commands.write_index)
 
-    // next_write_index := (audio_data.live_commands.write_index + 1) % len(audio_data.live_commands.buffer)
     next_write_index := (write_index + 1) % len(audio_data.live_commands.buffer)
     if next_write_index != read_index
     {
         audio_data.live_commands.buffer[write_index] = command
         sync.atomic_store(&audio_data.live_commands.write_index, next_write_index)
-        // audio_data.live_commands.write_index = next_write_index
     }
 }
 
@@ -75,8 +73,6 @@ add_command_note_on :: proc(freq: f64, synth_index: u16) -> i16
     audio_data.notes_list[index].state = .Queued
     audio_data.notes_list[index].synth_index = synth_index
 
-    // note_count := sync.atomic_load(&audio_data.note_count)
-    // sync.atomic_store(&audio_data.note_count, audio_data.note_count + 1)
     add_command(cmd)
 
     return index

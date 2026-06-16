@@ -68,7 +68,10 @@ audio_callback :: proc "c" (pDevice: ^ma.device, pOutput, pInput: rawptr, frameC
         {
             case Command_Note_On:
                 audio_data.notes_list[cmd.note_index].state = .On
-                audio_data.notes_list[cmd.note_index].phase = rand.float64()
+                for i in 0..<len(audio_data.notes_list[cmd.note_index].phase)
+                {
+                    audio_data.notes_list[cmd.note_index].phase[i] = rand.float64()
+                }
                 audio_data.notes_list[cmd.note_index].frequency = cmd.frequency
                 audio_data.notes_list[cmd.note_index].velocity = cmd.velocity
                 audio_data.notes_list[cmd.note_index].time = 0
@@ -82,7 +85,6 @@ audio_callback :: proc "c" (pDevice: ^ma.device, pOutput, pInput: rawptr, frameC
 
         read_index = (read_index + 1) % len(audio_data.live_commands.buffer)
         sync.atomic_store(&audio_data.live_commands.read_index, read_index)
-        //audio_data.live_commands.read_index = (audio_data.live_commands.read_index + 1) % len(audio_data.live_commands.buffer)
     }
 
 
@@ -106,10 +108,18 @@ audio_callback :: proc "c" (pDevice: ^ma.device, pOutput, pInput: rawptr, frameC
                 synth := &audio_data.synths_list[note.synth_index]
                 adsr := synth.adsr
 
-                note_value, note_scale := get_wav_value(
-                    synth,
-                    f32(note.phase),
-                )
+                note_value, note_scale: f32
+                
+                for i in 0..<synth.voice_count
+                {
+                    nv, ns := get_wav_value(
+                        synth,
+                        f32(note.phase[i]),
+                    )
+                    note_value += nv
+                    note_scale += ns
+                }
+                note_value /= f32(synth.voice_count)
                 note_value *= note_scale
 
                 envelope: f32 = 1
