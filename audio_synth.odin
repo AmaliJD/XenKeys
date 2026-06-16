@@ -8,6 +8,8 @@ Synth :: struct
     wt2: Waveform_Type,
     warp: f32,
 
+    volume: f32,
+
     adsr: ADSR,
     down_sample: i32,
     bit_crush: i32,

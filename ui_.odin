@@ -335,6 +335,12 @@ draw_synth_display :: proc()
         imgui.SameLine(135)
         imgui.SliderFloat("##Drift Hz", &synth.drift_frequency, 0, 20, "%.2f")
 
+        imgui.Dummy(imgui.Vec2{0, 10})
+        imgui.PushItemWidth(240.0)
+        imgui.Text("Volume:")
+        imgui.SameLine(135)
+        imgui.SliderFloat("##Volume", &synth.volume, 0, 1, "%.2f")
+
         imgui.PopItemWidth()
 
         imgui.Dummy(imgui.Vec2{0, 30})

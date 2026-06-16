@@ -39,8 +39,6 @@ init_audio_data :: proc()
 {
     audio_data = new(Audio_Data)
 
-    init_synths_list()
-
     audio_data.synths_list[0] =
     {
         wt1 = Wav_Raw{ waveform = .Square },
@@ -53,8 +51,6 @@ init_audio_data :: proc()
             sustain = .5,
             release = 1,
         },
-
-        voice_count = 1,
 
         down_sample = 3,
         drift = 1.5,
@@ -73,9 +69,6 @@ init_audio_data :: proc()
             sustain = .5,
             release = 1,
         },
-
-        voice_count = 1,
-        detune = 0,
     }
     
     audio_data.synths_list[2] =
@@ -92,9 +85,6 @@ init_audio_data :: proc()
         },
 
         bit_crush = 3,
-
-        voice_count = 1,
-        detune = 0,
     }
 
     audio_data.synths_list[3] =
@@ -113,9 +103,6 @@ init_audio_data :: proc()
         bit_crush = 12,
         phase_skew = 1,
         amp_skew = -1,
-
-        voice_count = 1,
-        detune = 0,
     }
 
     audio_data.synths_list[4] =
@@ -133,9 +120,6 @@ init_audio_data :: proc()
 
         phase_skew = -0.1,
         amp_skew = -0.95,
-
-        voice_count = 1,
-        detune = 0,
     }
 
     audio_data.synths_list[5] =
@@ -154,8 +138,7 @@ init_audio_data :: proc()
         phase_skew = 0.4,
         amp_skew = 0.8,
 
-        voice_count = 1,
-        detune = 0,
+        volume = .25,
     }
 
     audio_data.synths_list[6] =
@@ -189,10 +172,9 @@ init_audio_data :: proc()
         },
 
         bit_crush = 1,
-
-        voice_count = 1,
-        detune = 0,
     }
+
+    init_synths_list()
 }
 
 

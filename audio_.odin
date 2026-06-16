@@ -41,7 +41,9 @@ init_synths_list :: proc()
 {
     for &s in audio_data.synths_list
     {
-        s.adsr.sustain = 1
+        if (s.adsr.sustain == 0) { s.adsr.sustain = 1 }
+        if (s.voice_count == 0) { s.voice_count = 1 }
+        if (s.volume == 0) { s.volume = 1 }
     }
 }
 
@@ -120,6 +122,7 @@ audio_callback :: proc "c" (pDevice: ^ma.device, pOutput, pInput: rawptr, frameC
                     note_scale += ns
                 }
                 note_value /= f32(synth.voice_count)
+                note_value *= synth.volume
                 note_value *= note_scale
 
                 envelope: f32 = 1
