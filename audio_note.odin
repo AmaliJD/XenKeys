@@ -2,13 +2,15 @@ package main
 
 import "mathx"
 
+MAX_VOICES :: 4
+
 Note :: struct
 {
     state: Note_State,
     synth_index: u16,
 
     frequency: f64,
-    phase: [8]f64,
+    phase: [MAX_VOICES]f64,
     time: f64,
 
     velocity: f32,

@@ -316,7 +316,7 @@ draw_synth_display :: proc()
         imgui.Text("Unision:")
         imgui.SameLine(135)
         voice_count_i32 := i32(synth.voice_count)
-        if imgui.SliderInt("##Unision", &voice_count_i32, 1, 8, "%d")
+        if imgui.SliderInt("##Unision", &voice_count_i32, 1, MAX_VOICES, "%d")
         {
             synth.voice_count = u8(voice_count_i32)
         }
