@@ -28,11 +28,11 @@ ui_data := struct
     space_key = { id = glfw.KEY_SPACE },
     extra_keys = {
         { id = glfw.KEY_Z },
-        { id = glfw.KEY_X },
+        { id = glfw.KEY_S },
+        { id = glfw.KEY_E },
+        { id = glfw.KEY_C },
         { id = glfw.KEY_F },
-        { id = glfw.KEY_G },
-        { id = glfw.KEY_H },
-        { id = glfw.KEY_L },
+        { id = glfw.KEY_T },
     },
 }
 
@@ -47,11 +47,11 @@ render_ui :: proc()
         audio_data.synth_index = (audio_data.synth_index + 1) % MAX_SYNTHS
     }
 
-    press_key_note(&(ui_data.extra_keys[0]), &(ui_data.extra_index[0]), 220 * 6/5)
-    press_key_note(&(ui_data.extra_keys[1]), &(ui_data.extra_index[1]), 220 * 8/5)
-    press_key_note(&(ui_data.extra_keys[2]), &(ui_data.extra_index[2]), 220 * 48/25)
-    press_key_note(&(ui_data.extra_keys[3]), &(ui_data.extra_index[3]), 220 * 19/10)
-    press_key_note(&(ui_data.extra_keys[4]), &(ui_data.extra_index[4]), 220 * 15/8)
+    press_key_note(&(ui_data.extra_keys[0]), &(ui_data.extra_index[0]), 220 * 1)
+    press_key_note(&(ui_data.extra_keys[1]), &(ui_data.extra_index[1]), 220 * 9/8)
+    press_key_note(&(ui_data.extra_keys[2]), &(ui_data.extra_index[2]), 220 * 10/9)
+    press_key_note(&(ui_data.extra_keys[3]), &(ui_data.extra_index[3]), 220 * 4/3)
+    press_key_note(&(ui_data.extra_keys[4]), &(ui_data.extra_index[4]), 220 * 5/3)
     press_key_note(&(ui_data.extra_keys[5]), &(ui_data.extra_index[5]), 220 * 13/8)
 
     audio_data.log.elapsed_time = logging.get_time()
