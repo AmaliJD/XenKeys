@@ -75,6 +75,9 @@ get_wav_value :: proc(synth: ^Synth, phase: f32) -> (f32, f32)
                 value, scale = get_wav_raw_warp(w1.waveform, w2.waveform, _phase, synth.warp)
         }
 
+        case Wav_Harmonics:
+            value = get_wav_harmonics(w1, _phase)
+
         case Wav_Test:
         if synth.warp == 0
         {

@@ -3,13 +3,11 @@ package main
 import "core:math"
 import "mathx"
 
-
 // ----------------------------------------------------------------------------------- sine
 sine :: proc(phase: f32) -> f32
 {
     return math.sin_f32(phase * math.TAU)
 }
-
 
 // ----------------------------------------------------------------------------------- morph to pusle
 sine_to_pulse :: proc(phase: f32, warp: f32) -> f32

@@ -25,12 +25,13 @@ window_height :: 720
 window_flags: Window_Flags
 
 
-// ----------------------------------------------------------------------------------- helpers
+// ----------------------------------------------------------------------------------- initialization
 init :: proc()
 {
     logging.init_time()
     init_window_flags()
     init_key_map()
+    init_waveform_tables()
 
     init_audio_data()
 }
@@ -160,18 +161,19 @@ init_audio_data :: proc()
 
     audio_data.synths_list[7] =
     {
-        wt1 = Wav_Raw{ waveform = .White },
+        wt1 = Wav_Harmonics{ preset = .Prime, harmonics = 8 },
         wt2 = Wav_Raw{ waveform = .White },
-        warp = 0.8,
+        warp = 0,
 
         adsr = {
-            attack = 0.2,
+            attack = 0.02,
             decay = 0,
-            sustain = 0.1,
-            release = 1.3,
+            sustain = 1,
+            release = .8,
         },
 
-        bit_crush = 1,
+        voice_count = 2,
+        detune = 1,
     }
 
     init_synths_list()
