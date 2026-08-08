@@ -161,7 +161,7 @@ init_audio_data :: proc()
 
     audio_data.synths_list[7] =
     {
-        wt1 = Wav_Harmonics{ preset = .Prime, harmonics = 8 },
+        wt1 = Wav_Harmonics{ preset = .Square, harmonics = 16 },
         wt2 = Wav_Raw{ waveform = .White },
         warp = 0,
 

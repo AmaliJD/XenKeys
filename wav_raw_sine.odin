@@ -19,21 +19,27 @@ sine_to_pulse :: proc(phase: f32, warp: f32) -> f32
         return sine(phase)
     }
     
-    _phase := phase
-    if phase <= .5
-    {
-        _phase = .5 * sine_to_pulse_phase_mod(2 * phase, _warp)
-    }
-    else
-    {
-        _phase = .5 + .5 * sine_to_pulse_phase_mod(2 * phase - 1, _warp)
-    }
+    val := sine(phase)
+    sign := math.sign(val)
+    abs := math.abs(val)
+    pow := mathx.remap(_warp, 0, 1, 1, 25)
+    return math.pow(abs, pow) * sign
+
+    // _phase := phase
+    // if phase <= .5
+    // {
+    //     _phase = .5 * sine_to_pulse_phase_mod(2 * phase, _warp)
+    // }
+    // else
+    // {
+    //     _phase = .5 + .5 * sine_to_pulse_phase_mod(2 * phase - 1, _warp)
+    // }
     
-    return sine(_phase)
+    // return sine(_phase)
 }
 
 @private
-sine_to_pulse_phase_mod :: proc(phase, warp: f32) -> f32 // use different function
+sine_to_pulse_phase_mod :: proc(phase, warp: f32) -> f32 // use different function (depreciated)
 {
     k := 1 + 8 * warp
     t := 2 * phase - 1

@@ -17,9 +17,21 @@ init_waveform_tables :: proc()
     }
 }
 
-get_sine_table :: proc(phase: f32) -> f32
+get_sine_table :: proc(phase: f32, pulse_mod: f32 = 0) -> f32
 {
     index := int(phase * TABLE_LENGTH) & (TABLE_LENGTH - 1)
 
-    return sine_table[index]
+    // return sine_table[index]
+    if pulse_mod == 0
+    {
+        return sine_table[index]
+    }
+    else
+    {
+        val := sine_table[index]
+        sign := math.sign(val)
+        abs := math.abs(val)
+        pow := mathx.remap(pulse_mod, 0, 1, 1, 25)
+        return math.pow(abs, pow) * sign
+    }
 }
