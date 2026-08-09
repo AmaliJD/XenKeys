@@ -26,8 +26,10 @@ Preset_Harmonics :: enum
     Square,
     Saw,
     Octaves,
+    Chimes,
     Primes,
-    Fibonacci
+    Fibonacci,
+    Test
 }
 
 // ----------------------------------------------------------------------------------- get value
@@ -135,6 +137,30 @@ get_wav_harmonics :: proc(wh: Wav_Harmonics, phase, pulse_mod: f32) -> f32
                 temp := curr
                 curr = curr + prev
                 prev = temp
+            }
+
+        case .Chimes:
+            for i in 1..=wh.harmonics
+            {
+                curr_val := get_sine_table(phase * n)
+
+                amp := amp_sign / (n)
+                amp_sum += math.abs(amp)
+                val += curr_val * amp
+
+                n *= 6
+            }
+        
+        case .Test:
+            for i in 1..=wh.harmonics
+            {
+                curr_val := get_sine_table(phase * n)
+
+                amp := amp_sign / (n)
+                amp_sum += math.abs(amp)
+                val += curr_val * amp
+
+                n *= 6
             }
     }
 
