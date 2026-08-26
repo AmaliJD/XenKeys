@@ -185,6 +185,7 @@ audio_callback :: proc "c" (pDevice: ^ma.device, pOutput, pInput: rawptr, frameC
             output_value     := value * gain
             output[i * 2]     = output_value
             output[i * 2 + 1] = output_value
+            ui_data.output_waveform_visual[i] = output_value
 
             audio_data.value = output_value
             peak_value = math.max(peak_value, math.abs(output_value))

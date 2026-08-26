@@ -46,14 +46,10 @@ init_audio_data :: proc()
         wt2 = Wav_Raw{ waveform = .Triangle },
         warp = .2,
 
-        adsr = {
-            attack = .01,
-            decay = .2,
-            sustain = .5,
-            release = 1,
-        },
+        adsr = { .01, .2, .5, 1 },
 
         down_sample = 3,
+
         drift = 1.5,
         drift_frequency = 4,
     }
@@ -64,12 +60,7 @@ init_audio_data :: proc()
         wt2 = Wav_Raw{ waveform = .Sine },
         warp = .6,
 
-        adsr = {
-            attack = .01,
-            decay = .2,
-            sustain = .5,
-            release = 1,
-        },
+        adsr = { .01, .2, .5, 1 },
     }
     
     audio_data.synths_list[2] =
@@ -78,12 +69,7 @@ init_audio_data :: proc()
         wt2 = Wav_Raw{ waveform = .Square },
         warp = 0,
 
-        adsr = {
-            attack = 0,
-            decay = .2,
-            sustain = .5,
-            release = 1,
-        },
+        adsr = { 0, .2, .5, 1 },
 
         bit_crush = 3,
     }
@@ -94,14 +80,10 @@ init_audio_data :: proc()
         wt2 = Wav_Raw{ waveform = .White },
         warp = 0.01,
 
-        adsr = {
-            attack = 0.04,
-            decay = 0.1,
-            sustain = 0.8,
-            release = 0.8,
-        },
+        adsr = { 0.04, 0.1, 0.8, 0.8 },
 
         bit_crush = 12,
+        
         phase_skew = 1,
         amp_skew = -1,
     }
@@ -112,12 +94,7 @@ init_audio_data :: proc()
         wt2 = Wav_Raw{ waveform = .Sine },
         warp = 0.15,
 
-        adsr = {
-            attack = 0.1,
-            decay = 0.07,
-            sustain = 1,
-            release = 1.5,
-        },
+        adsr = { 0.1, 0.07, 1, 1.5 },
 
         phase_skew = -0.1,
         amp_skew = -0.95,
@@ -129,12 +106,7 @@ init_audio_data :: proc()
         wt2 = Wav_Raw{ waveform = .Sine },
         warp = 0,
 
-        adsr = {
-            attack = 0.01,
-            decay = 0,
-            sustain = 1,
-            release = .3,
-        },
+        adsr = { 0.01, 0, 1, .3 },
 
         phase_skew = 0.4,
         amp_skew = 0.8,
@@ -148,12 +120,7 @@ init_audio_data :: proc()
         wt2 = Wav_Raw{ waveform = .Saw },
         warp = 0,
 
-        adsr = {
-            attack = .02,
-            decay = .2,
-            sustain = 1,
-            release = 1,
-        },
+        adsr = { .02, .2, 1, 1 },
 
         voice_count = 4,
         detune = 3,
@@ -161,19 +128,14 @@ init_audio_data :: proc()
 
     audio_data.synths_list[7] =
     {
-        wt1 = Wav_Harmonics{ preset = .Test, harmonics = 8 },
+        wt1 = Wav_Harmonics{ preset = .Chimes, harmonics = 32 },
         wt2 = Wav_Raw{ waveform = .White },
         warp = 0,
 
-        adsr = {
-            attack = 0.02,
-            decay = 0,
-            sustain = 1,
-            release = .8,
-        },
+        adsr = { 0.02, 0.2, 1, .8 },
 
-        voice_count = 2,
-        detune = 1,
+        voice_count = 1,
+        detune = 3,
     }
 
     init_synths_list()
@@ -208,7 +170,8 @@ main :: proc()
     }
 
     glfw.MakeContextCurrent(window)
-    glfw.SetKeyCallback(window, key_callback)
+    glfw.SetKeyCallback(window, key_callback) // ------ key callback
+
 
     // ----------------------------------------------------------------------------------- connect window (GLFW) to graphics card (OpenGL)
     gl.load_up_to(3, 3, glfw.gl_set_proc_address)

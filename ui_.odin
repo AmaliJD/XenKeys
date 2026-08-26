@@ -23,7 +23,9 @@ ui_data := struct
     extra_keys: [6]Key,
     extra_index: [6]i16,
 
-    waveform_view: [256]f32,
+    synth_waveform_visual: [256]f32,
+    output_waveform_visual: [441]f32,
+    output_waveform_frequency_reference: f32
 }{
     space_key = { id = glfw.KEY_SPACE },
     extra_keys = {
@@ -34,6 +36,8 @@ ui_data := struct
         { id = glfw.KEY_F },
         { id = glfw.KEY_T },
     },
+
+    output_waveform_frequency_reference = 55
 }
 
 render_ui :: proc()
@@ -48,9 +52,9 @@ render_ui :: proc()
     }
 
     press_key_note(&(ui_data.extra_keys[0]), &(ui_data.extra_index[0]), 220 * 1)
-    press_key_note(&(ui_data.extra_keys[1]), &(ui_data.extra_index[1]), 220 * 16/15)
-    press_key_note(&(ui_data.extra_keys[2]), &(ui_data.extra_index[2]), 220 * 12/11)
-    press_key_note(&(ui_data.extra_keys[3]), &(ui_data.extra_index[3]), 220 * 9/8)
+    press_key_note(&(ui_data.extra_keys[1]), &(ui_data.extra_index[1]), 220 * 10/9)
+    press_key_note(&(ui_data.extra_keys[2]), &(ui_data.extra_index[2]), 220 * 8/7)
+    press_key_note(&(ui_data.extra_keys[3]), &(ui_data.extra_index[3]), 220 * 7/6)
     press_key_note(&(ui_data.extra_keys[4]), &(ui_data.extra_index[4]), 220 * 6/5)
     press_key_note(&(ui_data.extra_keys[5]), &(ui_data.extra_index[5]), 220 * 13/8)
 
@@ -65,13 +69,14 @@ render_ui :: proc()
 
     // ----------------------------------------------------------------------------------- ui
     draw_log()
-    draw_output_buffer()
+    draw_output_value()
     draw_note_list()
     draw_synth_display()
+    draw_output_waveform()
 
 
     // ----------------------------------------------------------------------------------- rendering
-    gl.ClearColor(rgba(gray_15))
+    gl.ClearColor(rgba(GRAY_15))
     gl.Clear(gl.COLOR_BUFFER_BIT)
 
     imgui.Render()
@@ -89,7 +94,7 @@ draw_log :: proc()
     imgui.End()
 }
 
-draw_output_buffer :: proc()
+draw_output_value :: proc()
 {
     imgui.Begin("Output Buffer", nil, window_flags.draggable)
         cursor_pos := imgui.GetCursorPos()
@@ -109,6 +114,19 @@ draw_output_buffer :: proc()
         imgui.Text("%.2f", audio_data.peak_value)
 
         imgui.PopStyleColor(4)
+    imgui.End()
+}
+
+draw_output_waveform :: proc()
+{
+    imgui.Begin("Output Waveform", nil, window_flags.draggable)
+        imgui.PlotLines(
+            "##Output_Waveform",
+            &ui_data.output_waveform_visual[0],
+            len(ui_data.output_waveform_visual),
+            0, nil, -1.1, 1.1,
+            {imgui.GetContentRegionAvail().x, 180},
+        )
     imgui.End()
 }
 
@@ -141,7 +159,7 @@ draw_note_list :: proc()
                         }
                         else
                         {
-                            color = hex32(&gray_13)
+                            color = hex32(&GRAY_13)
                         }
 
                     case .Queued:
@@ -166,7 +184,7 @@ draw_note_list :: proc()
                 }
                 
                 imgui.DrawList_AddRectFilled(draw_list, cell_tl, cell_br, color)
-                imgui.DrawList_AddRect(draw_list, cell_tl, cell_br, hex32(&gray_25))
+                imgui.DrawList_AddRect(draw_list, cell_tl, cell_br, hex32(&GRAY_25))
             }
         }
         
@@ -192,7 +210,7 @@ draw_synth_display :: proc()
             color: u32
             if i != audio_data.synth_index
             {
-                color = hex32(&gray_13)
+                color = hex32(&GRAY_13)
             }
             else
             {
@@ -209,7 +227,7 @@ draw_synth_display :: proc()
             }
 
             imgui.DrawList_AddRectFilled(draw_list, cell_tl, cell_br, color)
-            imgui.DrawList_AddRect(draw_list, cell_tl, cell_br, hex32(&gray_25))
+            imgui.DrawList_AddRect(draw_list, cell_tl, cell_br, hex32(&GRAY_25))
 
             if imgui.IsMouseHoveringRect(cell_tl, cell_br) && imgui.IsMouseClicked(.Left)
             {
@@ -346,7 +364,7 @@ draw_synth_display :: proc()
         imgui.Dummy(imgui.Vec2{0, 30})
 
         write_wav_values_to_buffer(
-            ui_data.waveform_view[:],
+            ui_data.synth_waveform_visual[:],
             synth,
             0,
             3,
@@ -355,8 +373,8 @@ draw_synth_display :: proc()
 
         imgui.PlotLines(
             "##Waveform",
-            &ui_data.waveform_view[0],
-            len(ui_data.waveform_view),
+            &ui_data.synth_waveform_visual[0],
+            len(ui_data.synth_waveform_visual),
             0, nil, -1.1, 1.1,
             {imgui.GetContentRegionAvail().x, 180},
         )

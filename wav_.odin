@@ -24,7 +24,6 @@ Waveform_Type :: union
     Wav_Test,
 }
 
-
 // ----------------------------------------------------------------------------------- helpers
 waveform_pair :: proc(wav_1, wav_2: Waveform) -> int
 {

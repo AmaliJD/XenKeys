@@ -24,6 +24,7 @@ Preset_Harmonics :: enum
     Sine,
     Triangle,
     Square,
+    Pulse,
     Saw,
     Octaves,
     Chimes,
@@ -60,16 +61,18 @@ get_wav_harmonics :: proc(wh: Wav_Harmonics, phase, pulse_mod: f32) -> f32
             }
 
         case .Square:
-            // for i in 1..=wh.harmonics
-            // {
-            //     curr_val := get_sine_table(phase * n)
+            for i in 1..=wh.harmonics
+            {
+                curr_val := get_sine_table(phase * n)
 
-            //     amp := amp_sign / n
-            //     amp_sum += math.abs(amp)
-            //     val += curr_val * amp
+                amp := amp_sign / n
+                amp_sum += math.abs(amp)
+                val += curr_val * amp
 
-            //     n += 2
-            // }
+                n += 2
+            }
+
+        case .Pulse:
             duty_cycle := mathx.remap(pulse_mod, 0, 1, .5, PULSE_LOW_LIMIT)
             for i in 1..=wh.harmonics
             {
@@ -156,11 +159,11 @@ get_wav_harmonics :: proc(wh: Wav_Harmonics, phase, pulse_mod: f32) -> f32
             {
                 curr_val := get_sine_table(phase * n)
 
-                amp := amp_sign / (n)
+                amp := amp_sign// / n
                 amp_sum += math.abs(amp)
                 val += curr_val * amp
 
-                n *= 6
+                n += 3
             }
     }
 

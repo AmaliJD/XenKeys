@@ -3,9 +3,9 @@ package main
 import "imgui"
 
 Color :: [4]f32
-gray_25 : Color = { 0.25, 0.25, 0.25, 1.0 }
-gray_15 : Color = { 0.15, 0.15, 0.15, 1.0 }
-gray_13 : Color = { 0.13, 0.13, 0.13, 1.0 }
+GRAY_25 : Color = { 0.25, 0.25, 0.25, 1.0 }
+GRAY_15 : Color = { 0.15, 0.15, 0.15, 1.0 }
+GRAY_13 : Color = { 0.13, 0.13, 0.13, 1.0 }
 
 color_1 : Color = { 1.0, 0.3, 0.0, 1.0 }
 color_2 : Color = { 1.0, 0.8, 0.0, 1.0 }
