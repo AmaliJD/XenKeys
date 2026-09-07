@@ -42,6 +42,8 @@ Key :: bit_field u16
     id:                  i32  | 13, // minimum 9
 }
 
+_BASE_FREQUENCY: f64 = 200.0
+
 
 // ----------------------------------------------------------------------------------- helpers
 init_key_map :: proc()
@@ -49,10 +51,9 @@ init_key_map :: proc()
     key_map = make(map[i32]Keyboard_Data, len(keys))
 
     log_scale := mathx.get_interval_log_scale(2, EDO)
-    start_frequency : f64 = 220.0
     for k, i in keys
     {
-        key_map[k] = Keyboard_Data{ frequency = mathx.add_intervals(start_frequency, f64(i), log_scale) }
+        key_map[k] = Keyboard_Data{ frequency = mathx.add_intervals(_BASE_FREQUENCY, f64(i), log_scale) }
     }
 }
 

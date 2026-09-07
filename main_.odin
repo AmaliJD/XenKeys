@@ -83,7 +83,7 @@ init_audio_data :: proc()
         adsr = { 0.04, 0.1, 0.8, 0.8 },
 
         bit_crush = 12,
-        
+
         phase_skew = 1,
         amp_skew = -1,
     }
@@ -128,11 +128,11 @@ init_audio_data :: proc()
 
     audio_data.synths_list[7] =
     {
-        wt1 = Wav_Harmonics{ preset = .Chimes, harmonics = 32 },
+        wt1 = Wav_Harmonics{ preset = .Piano, harmonics = 8 },
         wt2 = Wav_Raw{ waveform = .White },
-        warp = 0,
+        warp = 0.15,
 
-        adsr = { 0.02, 0.2, 1, .8 },
+        adsr = { 0.01, 1, .2, 2 },
 
         voice_count = 1,
         detune = 3,

@@ -30,6 +30,7 @@ Preset_Harmonics :: enum
     Chimes,
     Primes,
     Fibonacci,
+    Piano,
     Test
 }
 
@@ -152,6 +153,21 @@ get_wav_harmonics :: proc(wh: Wav_Harmonics, phase, pulse_mod: f32) -> f32
                 val += curr_val * amp
 
                 n *= 6
+            }
+
+        case .Piano:
+            B := pulse_mod * pulse_mod * .01; // inharmonicity coefficient
+            r : f32 = .5 // amp falloff coefficient
+            for i in 1..=wh.harmonics
+            {
+                partial_scale := n * math.sqrt(1 + B * n * n)
+                curr_val := get_sine_table(phase * partial_scale)
+
+                amp := amp_sign * math.exp(-r * (partial_scale - 1))
+                amp_sum += math.abs(amp)
+                val += curr_val * amp
+
+                n += 1
             }
         
         case .Test:

@@ -4,6 +4,30 @@ import "mathx"
 
 MAX_VOICES :: 4
 
+Params :: enum
+{
+    Frequency,
+    
+    Volume,
+
+    Attack,
+    Decay,
+    Sustain,
+    Release,
+
+    Down_Sample,
+    Bit_Crush,
+
+    Phase_Skew,
+    Amp_Skew,
+
+    Voice_Count,
+    Detune,
+
+    Drift,
+    Drift_Frequency,
+}
+
 Note :: struct
 {
     state: Note_State,
@@ -18,6 +42,10 @@ Note :: struct
 
     drift_targets: [4]i16,
     drift_sample_counter: u32,
+
+    base_params: [Params]f32,
+    params: [Params]f32,
+    mod_params: bit_set[Params],
 }
 
 Note_State :: enum u8
