@@ -25,8 +25,14 @@ Synth :: struct
     drift_frequency: f32,
 
     vibrato_type: Vibrato_Type,
+    vibrato_wf: Waveform,
     vibrato_frequency: f32,
     vibrato_amp: f32,
+
+    tremelo_type: Tremelo_Type,
+    tremelo_wf: Waveform,
+    tremelo_frequency: f32,
+    tremelo_amp: f32,
 }
 
 ADSR :: struct
@@ -41,6 +47,12 @@ Vibrato_Type :: enum
 {
     Exponential, Linear
 }
+
+Tremelo_Type :: enum
+{
+    Additive, Multiplicative
+}
+
 
 
 // ----------------------------------------------------------------------------------- setters

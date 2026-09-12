@@ -58,9 +58,15 @@ init_audio_data :: proc()
     {
         wt1 = Wav_Raw{ waveform = .Square },
         wt2 = Wav_Raw{ waveform = .Sine },
-        warp = .6,
+        warp = 1,
 
         adsr = { .01, .2, .5, 1 },
+        
+        amp_skew = 1,
+
+        vibrato_type = .Linear,
+        vibrato_frequency = 2.03,
+        vibrato_amp = 3,
     }
     
     audio_data.synths_list[2] =

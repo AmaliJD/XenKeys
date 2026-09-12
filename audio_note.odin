@@ -15,11 +15,13 @@ Note :: struct
 
     velocity: f32,
     last_envelope_value: f32,
+    volume_scale: f32,
 
     drift_targets: [4]i16,
     drift_sample_counter: u32,
 
     vibrato_phase: f64,
+    tremelo_phase: f64,
 
     base_params: [Params]f32,
     params: [Params]f32,
@@ -51,7 +53,21 @@ update_note :: proc(note: ^Note, sample_rate: u32)
                 note.vibrato_phase += f64(synth.vibrato_frequency) / f64(sample_rate)
                 if note.vibrato_phase >= 1 do note.vibrato_phase -= 1
 
-                vibrato_offset := sine(f32(note.vibrato_phase)) * synth.vibrato_amp
+                vibrato_offset: f32
+                switch synth.vibrato_wf
+                {
+                    case .Sine:
+                        vibrato_offset = sine(f32(note.vibrato_phase)) * synth.vibrato_amp
+                    case .Square:
+                        vibrato_offset = square(f32(note.vibrato_phase)) * synth.vibrato_amp
+                    case .Saw:
+                        vibrato_offset = saw(f32(note.vibrato_phase)) * synth.vibrato_amp
+                    case .Triangle:
+                        vibrato_offset = triangle(f32(note.vibrato_phase)) * synth.vibrato_amp
+                    case .White:
+                        vibrato_offset = white(f32(note.vibrato_phase)) * synth.vibrato_amp
+                }
+                
                 frequency = mathx.add_degrees(frequency, f64(vibrato_offset))
             case .Linear:
                 freq := f32(note.frequency) * synth.vibrato_frequency
@@ -60,9 +76,55 @@ update_note :: proc(note: ^Note, sample_rate: u32)
                 note.vibrato_phase += f64(freq) / f64(sample_rate)
                 if note.vibrato_phase >= 1 do note.vibrato_phase -= 1
 
-                vibrato_offset := sine(f32(note.vibrato_phase)) * amp
+                vibrato_offset: f32
+                switch synth.vibrato_wf
+                {
+                    case .Sine:
+                        vibrato_offset = sine(f32(note.vibrato_phase)) * amp
+                    case .Square:
+                        vibrato_offset = square(f32(note.vibrato_phase)) * amp
+                    case .Saw:
+                        vibrato_offset = saw(f32(note.vibrato_phase)) * amp
+                    case .Triangle:
+                        vibrato_offset = triangle(f32(note.vibrato_phase)) * amp
+                    case .White:
+                        vibrato_offset = white(f32(note.vibrato_phase)) * amp
+                }
+                
                 frequency += f64(vibrato_offset)
         }
+    }
+
+    // tremelo
+    if synth.tremelo_frequency > 0
+    {
+        freq := synth.tremelo_frequency
+        if synth.tremelo_type == .Multiplicative
+        {
+            freq = freq * f32(note.frequency)
+        }
+
+        note.tremelo_phase += f64(freq) / f64(sample_rate)
+        if note.tremelo_phase >= 1 do note.tremelo_phase -= 1
+
+        switch synth.tremelo_wf
+        {
+            case .Sine:
+                note.volume_scale = (sine(f32(note.tremelo_phase)) * 0.5 * synth.tremelo_amp) + 1 - 0.5 * synth.tremelo_amp
+            case .Square:
+                note.volume_scale = (square(f32(note.tremelo_phase)) * 0.5 * synth.tremelo_amp) + 1 - 0.5 * synth.tremelo_amp
+            case .Saw:
+                note.volume_scale = (saw(f32(note.tremelo_phase)) * 0.5 * synth.tremelo_amp) + 1 - 0.5 * synth.tremelo_amp
+            case .Triangle:
+                note.volume_scale = (triangle(f32(note.tremelo_phase)) * 0.5 * synth.tremelo_amp) + 1 - 0.5 * synth.tremelo_amp
+            case .White:
+                note.volume_scale = (white(f32(note.tremelo_phase)) * 0.5 * synth.tremelo_amp) + 1 - 0.5 * synth.tremelo_amp
+        }
+        // note.volume_scale = (sine(f32(note.tremelo_phase)) * 0.5 * synth.tremelo_amp) + 1 - 0.5 * synth.tremelo_amp
+    }
+    else
+    {
+        note.volume_scale = 1
     }
 
     // pitch drift

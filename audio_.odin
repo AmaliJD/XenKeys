@@ -160,6 +160,7 @@ audio_callback :: proc "c" (pDevice: ^ma.device, pOutput, pInput: rawptr, frameC
                     )
                     note_value += nv
                     note_scale += ns
+                    note_value *= note.volume_scale
                 }
                 note_value /= f32(synth.voice_count)
                 note_value *= synth.volume

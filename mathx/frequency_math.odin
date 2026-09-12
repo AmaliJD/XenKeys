@@ -33,6 +33,11 @@ add_intervals :: proc
     add_intervals_precomputed_log_scale,
 }
 
+ratio_to_degrees :: proc(ratio: f64) -> f64
+{
+    return math.ln_f64(ratio) / degree_log_scale
+}
+
 @private
 add_intervals_recomputed_log_scale :: proc(frequency, intervals, base, divisions: f64) -> f64
 {

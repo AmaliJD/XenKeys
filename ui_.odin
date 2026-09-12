@@ -363,11 +363,22 @@ draw_synth_display :: proc()
                 case .Exponential:
                     synth.vibrato_type = .Linear
                     
+                    synth.vibrato_amp = f32(mathx.add_degrees(1, f64(synth.vibrato_amp)))
 
                 case .Linear:
                     synth.vibrato_type = .Exponential
-                    
+
+                    synth.vibrato_frequency = synth.vibrato_frequency * f32(_BASE_FREQUENCY)
+                    synth.vibrato_amp = f32(mathx.ratio_to_degrees(f64(synth.vibrato_amp * 2))) - 1
             }
+        }
+
+        vibrato_wf: cstring = strings.clone_to_cstring(fmt.tprintf("%v##vibrato_wf", synth.vibrato_wf))
+        imgui.SameLine(135)
+        if imgui.Button(vibrato_wf)
+        {
+            next := (int(synth.vibrato_wf) + 1) % (len(Waveform) - 1)
+            synth.vibrato_wf = Waveform(next)
         }
 
         switch synth.vibrato_type
@@ -375,21 +386,63 @@ draw_synth_display :: proc()
             case .Linear:
                 imgui.Text("Vibrato Freq Ratio:")
                 imgui.SameLine(135)
-                imgui.SliderFloat("##Vibrato Freq", &synth.vibrato_frequency, 0, 30, "%.2f")
+                imgui.SliderFloat("##Vibrato Freq", &synth.vibrato_frequency, 0, 6, "%.2f")
 
                 imgui.Text("Vibrato Depth Ratio:")
                 imgui.SameLine(135)
-                imgui.SliderFloat("##Vibrato Amp", &synth.vibrato_amp, 0, 4, "%.2f")
+                imgui.SliderFloat("##Vibrato Amp", &synth.vibrato_amp, 0, 9, "%.2f")
 
             case .Exponential:
                 imgui.Text("Vibrato Freq:")
                 imgui.SameLine(135)
-                imgui.SliderFloat("##Vibrato Freq", &synth.vibrato_frequency, 0, 50, "%.2f")
+                imgui.SliderFloat("##Vibrato Freq", &synth.vibrato_frequency, 0, 20, "%.2f")
 
                 imgui.Text("Vibrato Amp:")
                 imgui.SameLine(135)
                 imgui.SliderFloat("##Vibrato Amp", &synth.vibrato_amp, 0, 720, "%.2f")
         }
+
+        imgui.Dummy(imgui.Vec2{0, 10})
+        imgui.PushItemWidth(240.0)
+        tremelo_type_button: cstring = strings.clone_to_cstring(fmt.tprintf("%v##tremelo_type", synth.tremelo_type))
+        if imgui.Button(tremelo_type_button)
+        {
+            switch synth.tremelo_type
+            {
+                case .Additive:
+                    synth.tremelo_type = .Multiplicative
+                    synth.tremelo_frequency = synth.tremelo_frequency / f32(_BASE_FREQUENCY)
+
+                case .Multiplicative:
+                    synth.tremelo_type = .Additive
+                    synth.tremelo_frequency = synth.tremelo_frequency * f32(_BASE_FREQUENCY)
+            }
+        }
+
+        tremelo_wf: cstring = strings.clone_to_cstring(fmt.tprintf("%v##tremelo_wf", synth.tremelo_wf))
+        imgui.SameLine(135)
+        if imgui.Button(tremelo_wf)
+        {
+            next := (int(synth.tremelo_wf) + 1) % (len(Waveform) - 1)
+            synth.tremelo_wf = Waveform(next)
+        }
+
+        switch synth.tremelo_type
+        {
+            case .Additive:
+                imgui.Text("Tremelo Frequency:")
+                imgui.SameLine(135)
+                imgui.SliderFloat("##Tremelo Frequency", &synth.tremelo_frequency, 0, 20, "%.2f")
+
+            case .Multiplicative:
+                imgui.Text("Tremelo Frequency Ratio:")
+                imgui.SameLine(135)
+                imgui.SliderFloat("##Tremelo Frequency", &synth.tremelo_frequency, 0, 6, "%.2f")
+        }
+
+        imgui.Text("Tremelo Amp:")
+        imgui.SameLine(135)
+        imgui.SliderFloat("##Tremelo Amp", &synth.tremelo_amp, 0, 2, "%.2f")
 
         imgui.Dummy(imgui.Vec2{0, 10})
         imgui.PushItemWidth(240.0)
