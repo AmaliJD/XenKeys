@@ -124,7 +124,7 @@ draw_output_waveform :: proc()
             "##Output_Waveform",
             &ui_data.output_waveform_visual[0],
             len(ui_data.output_waveform_visual),
-            0, nil, -1.1, 1.1,
+            0, nil, -.25, .25,
             {imgui.GetContentRegionAvail().x, 180},
         )
     imgui.End()
@@ -355,13 +355,51 @@ draw_synth_display :: proc()
 
         imgui.Dummy(imgui.Vec2{0, 10})
         imgui.PushItemWidth(240.0)
+        vibrato_type_button: cstring = strings.clone_to_cstring(fmt.tprintf("%v##vibrato_type", synth.vibrato_type))
+        if imgui.Button(vibrato_type_button)
+        {
+            switch synth.vibrato_type
+            {
+                case .Exponential:
+                    synth.vibrato_type = .Linear
+                    
+
+                case .Linear:
+                    synth.vibrato_type = .Exponential
+                    
+            }
+        }
+
+        switch synth.vibrato_type
+        {
+            case .Linear:
+                imgui.Text("Vibrato Freq Ratio:")
+                imgui.SameLine(135)
+                imgui.SliderFloat("##Vibrato Freq", &synth.vibrato_frequency, 0, 30, "%.2f")
+
+                imgui.Text("Vibrato Depth Ratio:")
+                imgui.SameLine(135)
+                imgui.SliderFloat("##Vibrato Amp", &synth.vibrato_amp, 0, 4, "%.2f")
+
+            case .Exponential:
+                imgui.Text("Vibrato Freq:")
+                imgui.SameLine(135)
+                imgui.SliderFloat("##Vibrato Freq", &synth.vibrato_frequency, 0, 50, "%.2f")
+
+                imgui.Text("Vibrato Amp:")
+                imgui.SameLine(135)
+                imgui.SliderFloat("##Vibrato Amp", &synth.vibrato_amp, 0, 720, "%.2f")
+        }
+
+        imgui.Dummy(imgui.Vec2{0, 10})
+        imgui.PushItemWidth(240.0)
         imgui.Text("Volume:")
         imgui.SameLine(135)
         imgui.SliderFloat("##Volume", &synth.volume, 0, 1, "%.2f")
 
         imgui.PopItemWidth()
 
-        imgui.Dummy(imgui.Vec2{0, 30})
+        //imgui.Dummy(imgui.Vec2{0, 30})
 
         write_wav_values_to_buffer(
             ui_data.synth_waveform_visual[:],

@@ -23,6 +23,10 @@ Synth :: struct
 
     drift: f32,
     drift_frequency: f32,
+
+    vibrato_type: Vibrato_Type,
+    vibrato_frequency: f32,
+    vibrato_amp: f32,
 }
 
 ADSR :: struct
@@ -31,6 +35,11 @@ ADSR :: struct
     decay: f32,
     sustain: f32,
     release: f32,
+}
+
+Vibrato_Type :: enum
+{
+    Exponential, Linear
 }
 
 

@@ -4,30 +4,6 @@ import "mathx"
 
 MAX_VOICES :: 4
 
-Params :: enum
-{
-    Frequency,
-    
-    Volume,
-
-    Attack,
-    Decay,
-    Sustain,
-    Release,
-
-    Down_Sample,
-    Bit_Crush,
-
-    Phase_Skew,
-    Amp_Skew,
-
-    Voice_Count,
-    Detune,
-
-    Drift,
-    Drift_Frequency,
-}
-
 Note :: struct
 {
     state: Note_State,
@@ -43,9 +19,12 @@ Note :: struct
     drift_targets: [4]i16,
     drift_sample_counter: u32,
 
+    vibrato_phase: f64,
+
     base_params: [Params]f32,
     params: [Params]f32,
     mod_params: bit_set[Params],
+    modulators: [Params]u8,
 }
 
 Note_State :: enum u8
@@ -62,6 +41,29 @@ update_note :: proc(note: ^Note, sample_rate: u32)
     frequency := note.frequency
 
     if synth.voice_count == 0 { return }
+
+    // vibrato
+    if synth.vibrato_frequency > 0 && synth.vibrato_amp > 0
+    {
+        switch synth.vibrato_type
+        {
+            case .Exponential:
+                note.vibrato_phase += f64(synth.vibrato_frequency) / f64(sample_rate)
+                if note.vibrato_phase >= 1 do note.vibrato_phase -= 1
+
+                vibrato_offset := sine(f32(note.vibrato_phase)) * synth.vibrato_amp
+                frequency = mathx.add_degrees(frequency, f64(vibrato_offset))
+            case .Linear:
+                freq := f32(note.frequency) * synth.vibrato_frequency
+                amp := f32(note.frequency) * synth.vibrato_amp
+
+                note.vibrato_phase += f64(freq) / f64(sample_rate)
+                if note.vibrato_phase >= 1 do note.vibrato_phase -= 1
+
+                vibrato_offset := sine(f32(note.vibrato_phase)) * amp
+                frequency += f64(vibrato_offset)
+        }
+    }
 
     // pitch drift
     if (synth.drift != 0 && synth.drift_frequency > 0)
@@ -85,7 +87,7 @@ update_note :: proc(note: ^Note, sample_rate: u32)
         p.w = f32(note.drift_targets.w) / f32(max(i16))
 
         frequency_drift_amt := mathx.cubic_lerp(p.x, p.y, p.z, p.w, drift_t) * synth.drift
-        frequency = mathx.add_degrees(note.frequency, f64(frequency_drift_amt))
+        frequency = mathx.add_degrees(frequency, f64(frequency_drift_amt))
     }
 
     // phase

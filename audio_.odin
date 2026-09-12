@@ -37,6 +37,46 @@ Log :: struct
     elapsed_time: f64
 }
 
+Params :: enum
+{
+    Frequency,
+    Volume,
+
+    Attack,
+    Decay,
+    Sustain,
+    Release,
+
+    Warp,
+
+    Down_Sample,
+    Bit_Crush,
+
+    Phase_Skew,
+    Amp_Skew,
+
+    Voice_Count,
+    Detune,
+
+    Drift,
+    Drift_Frequency,
+
+    LFO_1_Frequency,
+    LFO_2_Frequency,
+    LFO_3_Frequency,
+    LFO_4_Frequency,
+
+    LFO_1_High,
+    LFO_2_High,
+    LFO_3_High,
+    LFO_4_High,
+
+    LFO_1_Low,
+    LFO_2_Low,
+    LFO_3_Low,
+    LFO_4_Low,
+}
+
 init_synths_list :: proc()
 {
     for &s in audio_data.synths_list
