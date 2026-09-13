@@ -19,8 +19,8 @@ import "core:math"
 audio_data: ^Audio_Data
 window: glfw.WindowHandle
 
-window_width  :: 1280
-window_height :: 720
+window_width  :: 1600
+window_height :: 900
 
 window_flags: Window_Flags
 
